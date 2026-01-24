@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
 export interface StrategyResponse {
@@ -13,12 +12,12 @@ export const generateGrowthStrategy = async (
   goals: string,
   mission: string
 ): Promise<StrategyResponse> => {
-  const apiKey = process.env.API_KEY;
+  const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : null;
+  
   if (!apiKey) {
-    throw new Error("API Key is missing");
+    throw new Error("Ministerial AI Key not found. Please check environment configuration.");
   }
 
-  // Create a fresh instance for each request as per best practices
   const ai = new GoogleGenAI({ apiKey });
   
   const response = await ai.models.generateContent({
@@ -65,6 +64,6 @@ export const generateGrowthStrategy = async (
     return JSON.parse(text);
   } catch (e) {
     console.error("JSON parsing error:", text);
-    throw new Error("Invalid response format from AI");
+    throw new Error("Invalid roadmap format received.");
   }
 };
