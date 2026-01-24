@@ -1,0 +1,8 @@
+{
+  "name": "Grow Ministry - Digital Partners for Faith-Based Impact",
+  "description": "A premium outreach and stewardship platform for churches and nonprofits, featuring AI-powered tools and mission-aligned digital roadmaps.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
