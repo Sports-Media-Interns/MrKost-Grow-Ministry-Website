@@ -100,7 +100,8 @@ const SupportAgent: React.FC = () => {
               });
               setCurrentSpeech({ user: '', agent: '' });
             }
-            const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+            // Fix for TS18048: added optional chaining before index access
+            const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio) {
               setStatus('Speaking');
               const ctx = audioContexts.current!.output;
