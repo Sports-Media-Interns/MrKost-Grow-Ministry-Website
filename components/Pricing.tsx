@@ -7,40 +7,12 @@ const Pricing: React.FC = () => {
 
   const plans = [
     {
-      name: "Digital Evangelism Suite",
-      tagline: "Go and make disciples of all nations",
-      description: "Reach your community where they are through social connection",
-      monthlyPrice: 99,
-      yearlyPrice: 990,
-      monthlyLink: "https://link.fastpaydirect.com/payment-link/68a7bc8a67ee3b0ba068708d",
-      yearlyLink: "https://link.fastpaydirect.com/payment-link/68b4220e67ee3b57ae68aee1",
-      trialAvailable: true,
-      features: [
-        "Multi-Platform Ministry Page Management",
-        "Automated Scripture & Devotional Posting",
-        "Church Event Promotion & Outreach",
-        "Sermon Highlight Clips & Inspirational Quotes",
-        "Prayer Request Social Campaigns",
-        "Community Connection Monitoring",
-        "Facebook, Instagram & YouTube Integration",
-        "AI-Generated Faith Content",
-        "Service Live Stream Promotion Tools",
-        "Visibility Strategy for Church Growth",
-        "Outreach & Reach Reporting",
-        "Branded Templates for Ministry Consistency"
-      ],
-      buttonText: "Expand Your Reach",
-      color: "indigo"
-    },
-    {
       name: "Digital Shepherd (Member Care)",
       tagline: "Know your sheep by name",
-      description: "Comprehensive congregational care powered by AI",
-      monthlyPrice: 297,
-      yearlyPrice: 2970,
-      monthlyLink: "https://link.fastpaydirect.com/payment-link/68a7baec613b1ba993cd51bc",
-      yearlyLink: "https://link.fastpaydirect.com/payment-link/68b421e5613b1b4489cd8fae",
-      trialAvailable: true,
+      description: "Comprehensive congregational care powered by AI. A permanent foundation for your ministry's growth.",
+      isOneTime: true,
+      price: 297,
+      link: "https://link.fastpaydirect.com/payment-link/68a7baec613b1ba993cd51bc",
       features: [
         "Complete Member Directory & Family Tracking",
         "Fellowship & Engagement Analytics",
@@ -55,19 +27,20 @@ const Pricing: React.FC = () => {
         "Small Group & Discipleship Management",
         "Congregational Milestone Reminders"
       ],
-      buttonText: "Begin Your Digital Ministry",
-      color: "slate"
+      buttonText: "Invest in Your Ministry",
+      color: "slate",
+      trialAvailable: false
     },
     {
-      name: "Complete Ministry Transformation",
+      name: "Hands-Free Digital Ministry",
       tagline: "Building His Kingdom with every tool",
-      description: "Everything your ministry needs in one powerful package",
+      description: "A complete managed solution. Our team becomes your digital department, handling growth and care end-to-end.",
       monthlyPrice: 495,
       yearlyPrice: 4950,
       monthlyLink: "https://link.fastpaydirect.com/payment-link/68b4639e613b1b92decd9036",
       yearlyLink: "https://link.fastpaydirect.com/payment-link/68b1d3ab613b1b01a2cd86de",
       popular: true,
-      trialAvailable: false,
+      trialAvailable: true,
       features: [
         "ALL Digital Shepherd Member Care Features",
         "ALL Digital Evangelism Outreach Features",
@@ -86,13 +59,6 @@ const Pricing: React.FC = () => {
     }
   ];
 
-  const getPriceDisplay = (plan: any) => {
-    if (isYearly) {
-      return `$${plan.yearlyPrice / 12}`;
-    }
-    return `$${plan.monthlyPrice}`;
-  };
-
   return (
     <section id="pricing" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,7 +67,7 @@ const Pricing: React.FC = () => {
             <span className="text-3xl font-bold tracking-tight text-indigo-900">
               GROW<span className="text-amber-500">MINISTRY</span>
             </span>
-            <p className="text-slate-500 font-medium text-sm md:text-base italic">Empowering Your Digital Mission Since 2005 | Spreading the Word Through Modern Technology</p>
+            <p className="text-slate-500 font-medium text-sm md:text-base italic">Empowering Your Digital Mission Since 2005</p>
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Ministry Investment Plans</h2>
@@ -121,12 +87,12 @@ const Pricing: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16 items-start">
           {plans.map((plan, idx) => (
             <div key={idx} className={`relative bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border-2 transition-transform duration-300 hover:scale-[1.02] ${plan.popular ? 'border-amber-500 lg:scale-105 z-10' : 'border-slate-100'}`}>
               {plan.popular && (
                 <div className="bg-amber-500 text-white text-center py-1.5 text-xs font-bold uppercase tracking-widest">
-                  ⭐ Most Popular
+                  ⭐ Flagship Managed Plan
                 </div>
               )}
               
@@ -136,22 +102,29 @@ const Pricing: React.FC = () => {
                     One Month Free Trial
                   </div>
                 )}
+                {plan.isOneTime && (
+                  <div className="mb-4 inline-block bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-indigo-200">
+                    Lifetime Investment
+                  </div>
+                )}
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-slate-900">{plan.name}</h3>
                   <p className="text-indigo-600 text-sm font-bold italic mt-1 leading-tight">"{plan.tagline}"</p>
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline">
-                    <span className="text-4xl font-extrabold text-slate-900">{getPriceDisplay(plan)}</span>
-                    <span className="text-slate-500 ml-2">/ mo</span>
+                    <span className="text-4xl font-extrabold text-slate-900">
+                      ${plan.isOneTime ? plan.price : (isYearly ? plan.yearlyPrice / 12 : plan.monthlyPrice)}
+                    </span>
+                    <span className="text-slate-500 ml-2">{plan.isOneTime ? 'Once' : '/ mo'}</span>
                   </div>
-                  {isYearly ? (
+                  {!plan.isOneTime && isYearly ? (
                     <div className="mt-1">
                       <p className="text-sm text-emerald-600 font-bold italic">Total: ${plan.yearlyPrice}/year</p>
                       <p className="text-xs text-slate-400 line-through">Regularly ${plan.monthlyPrice * 12}/year</p>
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-400 mt-1 italic">Billed monthly</p>
+                    <p className="text-xs text-slate-400 mt-1 italic">{plan.isOneTime ? 'No recurring fees' : 'Billed monthly'}</p>
                   )}
                   <p className="text-slate-600 text-sm mt-4 font-medium">{plan.description}</p>
                 </div>
@@ -178,10 +151,10 @@ const Pricing: React.FC = () => {
                   </a>
                 )}
                 <a 
-                  href={isYearly ? plan.yearlyLink : plan.monthlyLink}
+                  href={plan.isOneTime ? plan.link : (isYearly ? plan.yearlyLink : plan.monthlyLink)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`block w-full text-center py-4 px-4 rounded-xl font-bold transition-all ${plan.popular ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20' : 'bg-indigo-900 text-white hover:bg-indigo-950 shadow-lg shadow-indigo-900/10'}`}
+                  className={`block w-full text-center py-4 px-4 rounded-xl font-bold transition-all shadow-lg ${plan.popular ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/20' : 'bg-indigo-900 text-white hover:bg-indigo-950 shadow-indigo-900/10'}`}
                 >
                   {plan.buttonText}
                 </a>
@@ -198,37 +171,30 @@ const Pricing: React.FC = () => {
           ))}
         </div>
 
-        <div className="bg-indigo-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden shadow-2xl border-b-8 border-amber-500">
+        <div className="bg-indigo-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden shadow-2xl border-b-8 border-amber-500 max-w-5xl mx-auto">
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="grid lg:grid-cols-3 gap-12 items-center relative z-10">
             <div className="lg:col-span-2 space-y-6">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-400 text-sm font-bold uppercase tracking-wider">
                 🤝 Full-Service Ministry Partner
               </div>
-              <h3 className="text-3xl md:text-4xl font-bold">Hands-Free Digital Ministry</h3>
+              <h3 className="text-3xl md:text-4xl font-bold">Managed Growth & Outreach</h3>
               <p className="text-indigo-100 text-lg leading-relaxed">
-                Let our dedicated team handle your digital outreach while you focus on shepherding your flock. Includes: Dedicated partner manager, content creation, outreach management, monthly strategy calls, and priority support.
+                Add dedicated partner management to any package. We handle the technical labor while you focus on shepherding your flock.
               </p>
               <div className="flex items-baseline space-x-3">
-                <span className="text-indigo-300 text-lg italic">Add</span>
-                <span className="text-4xl font-extrabold text-amber-500">$1,000/month</span>
-                <span className="text-indigo-300 text-lg italic">to any package</span>
-              </div>
-              <div className="pt-6 border-t border-white/10">
-                <blockquote className="italic text-slate-300 text-lg">
-                  "Having Grow Ministry manage our digital presence has freed me to focus entirely on pastoral care and teaching. Our congregation has grown 40% since partnering with them!"
-                </blockquote>
-                <p className="mt-2 font-bold text-white">— Pastor Sarah Johnson</p>
+                <span className="text-indigo-300 text-lg italic">Starting at</span>
+                <span className="text-4xl font-extrabold text-amber-500">$1,000/mo</span>
               </div>
             </div>
             <div className="text-center lg:text-right">
               <a 
-                href="https://link.fastpaydirect.com/payment-link/68b4658b67ee3bcd8368af61"
+                href={SCHEDULING_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-amber-500 hover:bg-amber-600 text-white px-10 py-5 rounded-2xl font-extrabold text-xl transition-all shadow-xl shadow-amber-500/30 w-full lg:w-auto"
               >
-                Partner With Us
+                Inquire Today
               </a>
             </div>
           </div>
