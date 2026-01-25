@@ -1,11 +1,29 @@
 import React, { useState } from 'react';
 
+interface PricingPlan {
+  name: string;
+  tagline: string;
+  description: string;
+  isOneTime?: boolean;
+  price?: number;
+  link?: string;
+  monthlyPrice?: number;
+  yearlyPrice?: number;
+  monthlyLink?: string;
+  yearlyLink?: string;
+  popular?: boolean;
+  trialAvailable: boolean;
+  features: string[];
+  buttonText: string;
+  color: string;
+}
+
 const Pricing: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
 
   const SCHEDULING_LINK = "https://api.leadconnectorhq.com/widget/bookings/bookwithusdigitalmarketing-6a757c77-b1e8-4f09-9814-f9256b2213ed";
 
-  const plans = [
+  const plans: PricingPlan[] = [
     {
       name: "Digital Shepherd (Member Care)",
       tagline: "Know your sheep by name",
@@ -114,14 +132,14 @@ const Pricing: React.FC = () => {
                 <div className="mb-6">
                   <div className="flex items-baseline">
                     <span className="text-4xl font-extrabold text-slate-900">
-                      ${plan.isOneTime ? plan.price : (isYearly ? plan.yearlyPrice / 12 : plan.monthlyPrice)}
+                      ${plan.isOneTime ? plan.price : (isYearly ? (plan.yearlyPrice || 0) / 12 : (plan.monthlyPrice || 0))}
                     </span>
                     <span className="text-slate-500 ml-2">{plan.isOneTime ? 'Once' : '/ mo'}</span>
                   </div>
                   {!plan.isOneTime && isYearly ? (
                     <div className="mt-1">
                       <p className="text-sm text-emerald-600 font-bold italic">Total: ${plan.yearlyPrice}/year</p>
-                      <p className="text-xs text-slate-400 line-through">Regularly ${plan.monthlyPrice * 12}/year</p>
+                      <p className="text-xs text-slate-400 line-through">Regularly ${(plan.monthlyPrice || 0) * 12}/year</p>
                     </div>
                   ) : (
                     <p className="text-xs text-slate-400 mt-1 italic">{plan.isOneTime ? 'No recurring fees' : 'Billed monthly'}</p>
@@ -151,7 +169,7 @@ const Pricing: React.FC = () => {
                   </a>
                 )}
                 <a 
-                  href={plan.isOneTime ? plan.link : (isYearly ? plan.yearlyLink : plan.monthlyLink)}
+                  href={plan.isOneTime ? (plan.link || '#') : (isYearly ? plan.yearlyLink : plan.monthlyLink)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`block w-full text-center py-4 px-4 rounded-xl font-bold transition-all shadow-lg ${plan.popular ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/20' : 'bg-indigo-900 text-white hover:bg-indigo-950 shadow-indigo-900/10'}`}
