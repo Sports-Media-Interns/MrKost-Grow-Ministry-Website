@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 const Pricing: React.FC = () => {
@@ -15,6 +14,7 @@ const Pricing: React.FC = () => {
       yearlyPrice: 990,
       monthlyLink: "https://link.fastpaydirect.com/payment-link/68a7bc8a67ee3b0ba068708d",
       yearlyLink: "https://link.fastpaydirect.com/payment-link/68b4220e67ee3b57ae68aee1",
+      trialAvailable: true,
       features: [
         "Multi-Platform Ministry Page Management",
         "Automated Scripture & Devotional Posting",
@@ -40,6 +40,7 @@ const Pricing: React.FC = () => {
       yearlyPrice: 2970,
       monthlyLink: "https://link.fastpaydirect.com/payment-link/68a7baec613b1ba993cd51bc",
       yearlyLink: "https://link.fastpaydirect.com/payment-link/68b421e5613b1b4489cd8fae",
+      trialAvailable: true,
       features: [
         "Complete Member Directory & Family Tracking",
         "Fellowship & Engagement Analytics",
@@ -66,6 +67,7 @@ const Pricing: React.FC = () => {
       monthlyLink: "https://link.fastpaydirect.com/payment-link/68b4639e613b1b92decd9036",
       yearlyLink: "https://link.fastpaydirect.com/payment-link/68b1d3ab613b1b01a2cd86de",
       popular: true,
+      trialAvailable: false,
       features: [
         "ALL Digital Shepherd Member Care Features",
         "ALL Digital Evangelism Outreach Features",
@@ -127,10 +129,16 @@ const Pricing: React.FC = () => {
                   ⭐ Most Popular
                 </div>
               )}
+              
               <div className="p-8 flex-grow">
+                {plan.trialAvailable && (
+                  <div className="mb-4 inline-block bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-emerald-200">
+                    One Month Free Trial
+                  </div>
+                )}
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-slate-900">{plan.name}</h3>
-                  <p className="text-indigo-600 text-sm font-medium italic mt-1">"{plan.tagline}"</p>
+                  <p className="text-indigo-600 text-sm font-bold italic mt-1 leading-tight">"{plan.tagline}"</p>
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline">
@@ -158,12 +166,22 @@ const Pricing: React.FC = () => {
                   ))}
                 </ul>
               </div>
-              <div className="p-8 bg-slate-50 border-t border-slate-100 mt-auto">
+              <div className="p-8 bg-slate-50 border-t border-slate-100 mt-auto space-y-3">
+                {plan.trialAvailable && (
+                  <a 
+                    href={SCHEDULING_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center py-4 px-4 rounded-xl font-black uppercase tracking-widest text-xs bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+                  >
+                    Start 30-Day Free Trial
+                  </a>
+                )}
                 <a 
                   href={isYearly ? plan.yearlyLink : plan.monthlyLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`block w-full text-center py-4 px-4 rounded-xl font-bold transition-all mb-4 ${plan.popular ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20' : 'bg-indigo-900 text-white hover:bg-indigo-950 shadow-lg shadow-indigo-900/10'}`}
+                  className={`block w-full text-center py-4 px-4 rounded-xl font-bold transition-all ${plan.popular ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20' : 'bg-indigo-900 text-white hover:bg-indigo-950 shadow-lg shadow-indigo-900/10'}`}
                 >
                   {plan.buttonText}
                 </a>
