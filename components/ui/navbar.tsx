@@ -39,26 +39,14 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map(({ text, href, external }) => (
-              external ? (
-                <a
-                  key={text}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-foreground/70 hover:text-foreground transition"
-                >
-                  {text}
-                </a>
-              ) : (
-                <Link
-                  key={text}
-                  href={href}
-                  className="text-sm font-medium text-foreground/70 hover:text-foreground transition"
-                >
-                  {text}
-                </Link>
-              )
+            {navLinks.map(({ text, href }) => (
+              <Link
+                key={text}
+                href={href}
+                className="text-sm font-medium text-foreground/70 hover:text-foreground transition"
+              >
+                {text}
+              </Link>
             ))}
           </div>
 
@@ -89,28 +77,15 @@ export function Navbar() {
       {isOpen && (
         <div id="mobile-menu" className="md:hidden bg-background border-b border-border">
           <div className="px-4 py-4 space-y-3">
-            {navLinks.map(({ text, href, external }) => (
-              external ? (
-                <a
-                  key={text}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-sm font-medium text-foreground/70 hover:text-foreground transition"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {text}
-                </a>
-              ) : (
-                <Link
-                  key={text}
-                  href={href}
-                  className="block text-sm font-medium text-foreground/70 hover:text-foreground transition"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {text}
-                </Link>
-              )
+            {navLinks.map(({ text, href }) => (
+              <Link
+                key={text}
+                href={href}
+                className="block text-sm font-medium text-foreground/70 hover:text-foreground transition"
+                onClick={() => setIsOpen(false)}
+              >
+                {text}
+              </Link>
             ))}
             <Link
               href="/contact"

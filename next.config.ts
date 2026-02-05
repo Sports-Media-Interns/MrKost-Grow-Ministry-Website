@@ -6,7 +6,8 @@ const isDev = process.env.NODE_ENV === "development";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  output: "standalone",
+  // Use standalone output for Docker; Vercel uses its own adapter
+  ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
   images: {
     formats: ["image/avif", "image/webp"],
   },
