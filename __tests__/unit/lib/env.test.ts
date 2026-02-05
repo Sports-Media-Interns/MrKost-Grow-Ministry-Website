@@ -69,6 +69,9 @@ describe("validateEnv", () => {
 
   it("passes when required vars present", () => {
     vi.stubEnv("GHL_WEBHOOK_URL", "https://example.com/hook");
+    vi.stubEnv("RECAPTCHA_SECRET_KEY", "secret-123");
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example.com");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "token-123");
     const result = validateEnv();
     expect(result.valid).toBe(true);
     expect(result.missing).toHaveLength(0);

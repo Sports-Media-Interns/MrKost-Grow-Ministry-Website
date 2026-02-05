@@ -24,6 +24,9 @@ export function validateEmail(value: unknown): string {
 /** Validate and sanitize a phone number (7–15 digits, optional +/()/-/space formatting). */
 export function validatePhone(value: unknown): string {
   const phone = typeof value === "string" ? sanitizeString(value).trim() : "";
+  if (!phone) {
+    throw new Error("Valid phone number is required (7-15 digits)");
+  }
   // Only allow digits and common phone formatting chars
   if (!/^[+\d\s().-]+$/.test(phone)) {
     throw new Error("Phone number contains invalid characters");
