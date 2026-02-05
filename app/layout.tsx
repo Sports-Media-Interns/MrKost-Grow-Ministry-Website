@@ -1,0 +1,122 @@
+import type { Metadata } from "next";
+import Script from "next/script";
+import { Inter, Playfair_Display } from "next/font/google";
+import { Navbar } from "@/components/ui/navbar";
+import Footer4Col from "@/components/ui/footer-column";
+import { CookieConsent } from "@/components/ui/cookie-consent";
+import { ExitIntent } from "@/components/ui/exit-intent";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+
+const GA4_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || "";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://growministry.com"),
+  title: {
+    default: "Grow Ministry | AI-Powered Digital Solutions for Churches",
+    template: "%s | Grow Ministry",
+  },
+  description:
+    "Grow Ministry provides AI-powered CRM, websites, social media, and phone agents for churches and ministries. Veteran-owned. Start growing today.",
+  keywords: [
+    "AI for churches",
+    "church digital marketing",
+    "ministry technology solutions",
+    "AI-powered church CRM",
+    "church website development",
+    "faith-based digital services",
+    "veteran-owned church technology",
+    "SDVOSB church services",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Grow Ministry",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Grow Ministry Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: "@grow_ministry",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+        {/* Skip to main content — accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
+        >
+          Skip to main content
+        </a>
+        {GA4_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA4_ID}');
+              `}
+            </Script>
+          </>
+        )}
+        {/* GHL Chat Widget */}
+        <Script
+          src="https://widgets.leadconnectorhq.com/loader.js"
+          data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+          data-widget-id="67f69cbfa99c36de4915acce"
+          strategy="afterInteractive"
+        />
+        <ErrorBoundary>
+          <Navbar />
+          <main id="main-content">
+            {children}
+          </main>
+          <Footer4Col />
+          <CookieConsent />
+          <ExitIntent />
+
+        </ErrorBoundary>
+      </body>
+    </html>
+  );
+}
