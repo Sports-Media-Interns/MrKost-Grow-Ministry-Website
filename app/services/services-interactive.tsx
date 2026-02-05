@@ -120,7 +120,7 @@ const services = [
     icon: FileText,
     title: "Ministry Technology Master Report",
     tagline: "The complete integrated ecosystem",
-    image: "/images/services/master-report.webp",
+    image: "/images/services/grow-ministry-ai-phone-40021.jpg",
     description: "A comprehensive overview of the entire Grow Ministry platform. Addresses the modern ministry challenge of administrative overload and positions technology as a servant to ministry leadership.",
     features: [
       "Single integrated ecosystem eliminating multiple vendor juggling",
