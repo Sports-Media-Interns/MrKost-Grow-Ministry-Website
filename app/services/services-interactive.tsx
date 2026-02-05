@@ -12,7 +12,7 @@ const services = [
     icon: Phone,
     title: "AI Telephone Agent",
     tagline: "Never miss a call again",
-    image: "/images/services/ai-telephone.webp",
+    image: "/images/services/grow-ministry-ai-phone-40020.jpg",
     description: "An automated phone answering service powered by AI, designed for churches and ministries. Handles incoming calls professionally 24/7/365, ensuring every caller is directed to the right resource.",
     features: [
       "FAQ handling trained on your ministry's specific information",
