@@ -10,7 +10,6 @@ const navLinks = [
   { text: "Services", href: "/services" },
   { text: "Travel", href: "/travel" },
   { text: "About", href: "/about" },
-  { text: "Careers", href: "https://my.usaev.net/v2/preview/B6tJvSKhe5A2swg3QgaL", external: true },
   { text: "Contact", href: "/contact" },
 ]
 
