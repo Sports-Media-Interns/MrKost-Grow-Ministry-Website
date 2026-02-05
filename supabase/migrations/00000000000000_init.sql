@@ -1,0 +1,16 @@
+-- Initial migration placeholder
+-- Add your Supabase schema here when ready
+--
+-- Example:
+-- CREATE TABLE IF NOT EXISTS contacts (
+--   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+--   name TEXT NOT NULL,
+--   email TEXT NOT NULL,
+--   phone TEXT,
+--   message TEXT,
+--   source TEXT DEFAULT 'website',
+--   created_at TIMESTAMPTZ DEFAULT NOW()
+-- );
+--
+-- Run migrations with: supabase db push
+-- Generate new migration: supabase migration new <name>

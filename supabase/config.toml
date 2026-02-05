@@ -1,0 +1,15 @@
+[project]
+id = "grow-ministry"
+name = "Grow Ministry Website"
+
+[db]
+port = 54322
+major_version = 15
+
+[api]
+enabled = true
+port = 54321
+
+[studio]
+enabled = true
+port = 54323

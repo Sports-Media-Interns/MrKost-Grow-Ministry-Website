@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.github
+.husky
+.claude
+__tests__
+e2e
+coverage
+*.md
+.env*.local
+Dockerfile
+docker-compose.yml
+.dockerignore
+playwright-report
+test-results
