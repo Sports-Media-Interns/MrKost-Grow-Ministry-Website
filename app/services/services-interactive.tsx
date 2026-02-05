@@ -282,11 +282,11 @@ export function ServicesInteractive() {
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-16">
             Download any white paper to get the full details on pricing, features, and implementation.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {services.map((service) => (
               <div
                 key={service.id}
-                className="group bg-background rounded-xl border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                className="group w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.125rem)] bg-background rounded-xl border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
               >
                 {/* Image with hover overlay */}
                 <div className="relative w-full aspect-[16/10] overflow-hidden">
