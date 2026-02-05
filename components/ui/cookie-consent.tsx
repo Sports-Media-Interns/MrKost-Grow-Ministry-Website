@@ -293,7 +293,7 @@ export function CookieConsent() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* left: icon + text */}
             <div className="flex items-start gap-3 sm:items-center">
-              <Image src="/images/logo.png" alt="Grow Ministry" width={24} height={24} className="mt-0.5 shrink-0 rounded-full sm:mt-0" />
+              <Image src="/images/logo.webp" alt="Grow Ministry" width={24} height={24} className="mt-0.5 shrink-0 rounded-full sm:mt-0" />
               <p className="text-sm leading-relaxed text-primary-foreground/90">
                 We use cookies to enhance your experience and analyze site
                 traffic.{" "}

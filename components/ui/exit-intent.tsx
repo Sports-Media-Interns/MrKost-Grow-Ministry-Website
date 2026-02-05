@@ -247,7 +247,7 @@ export function ExitIntent() {
         {submitted ? (
           /* ---- thank-you state ---- */
           <div className="flex flex-col items-center gap-5 px-8 py-10 text-center">
-            <Image src="/images/logo.png" alt="Grow Ministry" width={56} height={56} className="rounded-full" />
+            <Image src="/images/logo.webp" alt="Grow Ministry" width={56} height={56} className="rounded-full" />
 
             <div>
               <h3 className="text-xl font-semibold font-[family-name:var(--font-playfair)] text-foreground">
@@ -279,7 +279,7 @@ export function ExitIntent() {
           /* ---- form state ---- */
           <div className="px-8 py-10">
             {/* logo */}
-            <Image src="/images/logo.png" alt="Grow Ministry" width={56} height={56} className="mx-auto mb-5 rounded-full" />
+            <Image src="/images/logo.webp" alt="Grow Ministry" width={56} height={56} className="mx-auto mb-5 rounded-full" />
 
             {/* headline */}
             <h2 className="text-center text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground">

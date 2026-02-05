@@ -55,6 +55,7 @@ const aboutLinks = [
   { text: 'FAQ', href: '/faq' },
   { text: 'Press', href: 'https://growministry.com/blog/', external: true },
   { text: 'Contact', href: '/contact' },
+  { text: 'Internships', href: 'https://my.usaev.net/v2/preview/HdNRJ2eV8bSk1sndSQup', external: true },
 ];
 
 const legalLinks = [
@@ -80,7 +81,7 @@ export default function Footer4Col() {
             <div className="flex justify-center gap-3 sm:justify-start items-center">
               <div className="size-16 rounded-full overflow-hidden shrink-0">
                 <Image
-                  src="/images/grow-ministry-logo.png"
+                  src="/images/grow-ministry-logo.webp"
                   alt="Grow Ministry Logo"
                   width={90}
                   height={90}

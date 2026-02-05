@@ -24,10 +24,11 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2">
             <div className="size-14 rounded-full overflow-hidden shrink-0">
               <Image
-                src="/images/grow-ministry-logo.png"
+                src="/images/grow-ministry-logo.webp"
                 alt="Grow Ministry"
                 width={80}
                 height={80}
+                priority
                 className="w-full h-full object-cover scale-[1.45]"
               />
             </div>

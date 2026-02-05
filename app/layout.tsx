@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
@@ -19,6 +19,10 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
+
+export const viewport: Viewport = {
+  themeColor: "#161821",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://growministry.com"),
@@ -68,6 +72,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="dns-prefetch" href="https://widgets.leadconnectorhq.com" />
+        <link rel="preconnect" href="https://widgets.leadconnectorhq.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         {/* Skip to main content — accessibility */}
         <a

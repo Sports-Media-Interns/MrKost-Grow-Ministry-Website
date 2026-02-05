@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  reactStrictMode: true,
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
   async headers() {
     return [
       // Global security headers
