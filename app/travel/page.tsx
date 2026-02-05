@@ -327,8 +327,8 @@ const features = [
   { icon: Heart, title: "Faith-Centered", description: "Every itinerary includes worship, devotionals, and spiritual growth.", image: "/images/heroes/travel-hero.webp" },
   { icon: Users, title: "Group Friendly", description: "Custom packages for church groups of any size.", image: "/images/heroes/about-hero.webp" },
   { icon: Calendar, title: "Flexible Dates", description: "Year-round scheduling to fit your congregation's calendar.", image: "/images/services/social-media.webp" },
-  { icon: Plane, title: "All-Inclusive", description: "Flights, accommodation, meals, and local transport arranged.", image: "/images/heroes/contact-hero.webp" },
-  { icon: MapPin, title: "Expert Guides", description: "Local Christian guides with deep knowledge of each destination.", image: "/images/services/master-report.webp" },
+  { icon: Plane, title: "All-Inclusive", description: "Flights, accommodation, meals, and local transport arranged.", image: "/images/services/grow-ministry-travel-10021.jpg" },
+  { icon: MapPin, title: "Expert Guides", description: "Local Christian guides with deep knowledge of each destination.", image: "/images/services/grow-ministry-travel-10020.jpg" },
 ];
 
 const travelJsonLd = {
