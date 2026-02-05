@@ -419,14 +419,16 @@ export default function TravelPage() {
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient}`} />
-                <div className="relative p-4 lg:p-6 text-center text-white min-h-[160px] lg:min-h-[220px] flex flex-col items-center justify-center">
-                  <type.icon className="size-8 lg:size-10 mx-auto drop-shadow-lg" />
+                <div className="relative p-4 lg:p-6 text-center text-white min-h-[160px] lg:min-h-[220px] flex flex-col items-center">
+                  <type.icon className="size-8 lg:size-10 mx-auto drop-shadow-lg mt-auto" />
                   <h3 className="mt-3 lg:mt-4 text-sm lg:text-lg font-semibold drop-shadow-md">{type.title}</h3>
                   <p className="mt-1 lg:mt-2 text-xs lg:text-sm text-white/80 leading-relaxed hidden sm:block">
                     {type.description}
                   </p>
-                  <p className="mt-3 lg:mt-4 text-2xl lg:text-3xl font-bold drop-shadow-md">{type.count}</p>
-                  <p className="text-xs text-white/70">destinations</p>
+                  <div className="mt-auto pt-3 lg:pt-4">
+                    <p className="text-2xl lg:text-3xl font-bold drop-shadow-md">{type.count}</p>
+                    <p className="text-xs text-white/70">destinations</p>
+                  </div>
                 </div>
               </div>
             ))}
