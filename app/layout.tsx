@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
@@ -65,11 +66,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get("x-nonce") ?? "";
+
   return (
     <html lang="en">
       <head>
@@ -94,6 +97,7 @@ export default function RootLayout({
           data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
           data-widget-id="67f69cbfa99c36de4915acce"
           strategy="afterInteractive"
+          nonce={nonce}
         />
         <ErrorBoundary>
           <Navbar />
@@ -103,7 +107,6 @@ export default function RootLayout({
           <Footer4Col />
           <CookieConsent />
           <ExitIntent />
-
         </ErrorBoundary>
       </body>
     </html>

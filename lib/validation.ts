@@ -1,7 +1,7 @@
 import { sanitizeString } from "./sanitize";
 
-/** Shared email regex for all form validation. */
-export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Shared email regex — requires TLD of 2+ chars, rejects a@b.c */
+export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+$/;
 
 /** Validate and sanitize a name field (2–200 chars). */
 export function validateName(value: unknown): string {
@@ -21,11 +21,15 @@ export function validateEmail(value: unknown): string {
   return email;
 }
 
-/** Validate and sanitize a phone number (7–15 digits). Returns sanitized string. */
+/** Validate and sanitize a phone number (7–15 digits, optional +/()/-/space formatting). */
 export function validatePhone(value: unknown): string {
   const phone = typeof value === "string" ? sanitizeString(value).trim() : "";
+  // Only allow digits and common phone formatting chars
+  if (!/^[+\d\s().-]+$/.test(phone)) {
+    throw new Error("Phone number contains invalid characters");
+  }
   const digits = phone.replace(/\D/g, "");
-  if (!phone || digits.length < 7 || digits.length > 15) {
+  if (digits.length < 7 || digits.length > 15) {
     throw new Error("Valid phone number is required (7-15 digits)");
   }
   return phone;

@@ -64,8 +64,8 @@ export async function verifyRecaptcha(
       return { success: false, score: 0 };
     }
 
-    // Score below 0.3 is likely a bot
-    if (data.score < 0.3) {
+    // Score below 0.5 is likely a bot (Google recommends 0.5+)
+    if (data.score < 0.5) {
       console.warn(`[reCAPTCHA] Low score: ${data.score}`);
       return { success: false, score: data.score };
     }
