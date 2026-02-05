@@ -4,8 +4,8 @@ test.describe("Homepage", () => {
   test("loads and displays hero section", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Grow Ministry/);
-    // Hero section should be visible
-    await expect(page.locator("main")).toBeVisible();
+    // Main content area should be visible
+    await expect(page.locator("#main-content")).toBeVisible();
   });
 
   test("has correct meta description", async ({ page }) => {

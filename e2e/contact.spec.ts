@@ -8,8 +8,8 @@ test.describe("Contact Page", () => {
 
   test("form has required fields", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.locator('input[name="name"], input[id="name"]')).toBeAttached();
-    await expect(page.locator('input[name="email"], input[id="email"]')).toBeAttached();
+    await expect(page.locator("#contact-name")).toBeAttached();
+    await expect(page.locator("#contact-email")).toBeAttached();
   });
 
   test("page has correct heading", async ({ page }) => {
