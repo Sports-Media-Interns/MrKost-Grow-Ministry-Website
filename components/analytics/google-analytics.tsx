@@ -69,6 +69,7 @@ export function GoogleAnalytics() {
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
         strategy="afterInteractive"
+        crossOrigin="anonymous"
       />
       <Script id="google-analytics" strategy="afterInteractive">
         {`

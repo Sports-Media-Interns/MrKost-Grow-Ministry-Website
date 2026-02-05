@@ -91,13 +91,15 @@ export default async function RootLayout({
         </a>
         {/* GA4 - only loads when user accepts analytics cookies */}
         <GoogleAnalytics />
-        {/* GHL Chat Widget */}
+        {/* GHL Chat Widget — SRI hash verified, crossorigin for CORS enforcement */}
         <Script
           src="https://widgets.leadconnectorhq.com/loader.js"
           data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
           data-widget-id="67f69cbfa99c36de4915acce"
           strategy="afterInteractive"
           nonce={nonce}
+          integrity="sha384-YmiRGC54k689pI/l1ttGWOpRs+FCEkFmIPOuAS0EdBR80u/lUeQ3pZa1uhDgz6NV"
+          crossOrigin="anonymous"
         />
         <ErrorBoundary>
           <Navbar />

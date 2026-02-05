@@ -36,7 +36,12 @@ export function getGA4MeasurementId(): string {
  * Call this during build or server start.
  */
 export function validateEnv(): { valid: boolean; missing: string[] } {
-  const required = ["GHL_WEBHOOK_URL"];
+  const required = [
+    "GHL_WEBHOOK_URL",
+    "RECAPTCHA_SECRET_KEY",
+    "UPSTASH_REDIS_REST_URL",
+    "UPSTASH_REDIS_REST_TOKEN",
+  ];
   const recommended = [
     "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
     "NEXT_PUBLIC_RECAPTCHA_SITE_KEY",
