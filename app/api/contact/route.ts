@@ -48,7 +48,7 @@ function validateContact(data: unknown): ContactPayload {
 export async function POST(request: NextRequest) {
   try {
     const clientIp = getClientIp(request);
-    const { allowed } = rateLimit(`contact:${clientIp}`, { limit: 5, windowMs: 60_000 });
+    const { allowed } = await rateLimit(`contact:${clientIp}`, { limit: 5, windowMs: 60_000 });
     if (!allowed) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },

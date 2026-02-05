@@ -14,14 +14,32 @@ describe("sanitizeString", () => {
     expect(sanitizeString('<script>alert("xss")</script>')).not.toContain(
       "<script>"
     );
+    expect(sanitizeString('<script>alert("xss")</script>')).not.toContain(
+      "alert"
+    );
   });
 
-  it("encodes ampersand", () => {
-    expect(sanitizeString("a & b")).toContain("&amp;");
+  it("strips style tags", () => {
+    expect(sanitizeString("<style>body{display:none}</style>")).not.toContain(
+      "<style>"
+    );
   });
 
-  it("encodes quotes", () => {
-    expect(sanitizeString('"quoted"')).toContain("&quot;");
+  it("removes javascript: URIs", () => {
+    expect(sanitizeString("javascript:alert(1)")).not.toContain("javascript:");
+  });
+
+  it("removes event handlers", () => {
+    expect(sanitizeString("onclick=alert(1)")).not.toContain("onclick=");
+    expect(sanitizeString("onmouseover=evil()")).not.toContain("onmouseover=");
+  });
+
+  it("preserves ampersand for CRM data", () => {
+    expect(sanitizeString("John & Jane's Church")).toBe("John & Jane's Church");
+  });
+
+  it("preserves quotes for CRM data", () => {
+    expect(sanitizeString('"quoted text"')).toBe('"quoted text"');
   });
 
   it("trims whitespace", () => {

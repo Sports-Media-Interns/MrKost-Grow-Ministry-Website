@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Link from "next/link"
+import { Globe, BookOpen, Heart, Users, Mountain, Church, Building2, MapPin } from "lucide-react"
 import type { TravelLocation } from "@/components/ui/travel-map"
 
 interface DestinationTabsProps {
@@ -11,6 +12,7 @@ interface DestinationTabsProps {
 interface TabDef {
   key: string
   label: string
+  icon: React.ComponentType<{ className?: string }>
   filterFn: (loc: TravelLocation) => boolean
   summary: string
 }
@@ -18,7 +20,8 @@ interface TabDef {
 const tabs: TabDef[] = [
   {
     key: "all",
-    label: "All",
+    label: "All Destinations",
+    icon: Globe,
     filterFn: () => true,
     summary:
       "Explore all 30 faith-based travel destinations across six continents. From mission trips and pilgrimages to retreats and conferences, Grow Ministry connects your congregation with transformative travel experiences worldwide.",
@@ -26,6 +29,7 @@ const tabs: TabDef[] = [
   {
     key: "holy-land",
     label: "Holy Land & Bible Lands",
+    icon: BookOpen,
     filterFn: (l) =>
       l.type === "pilgrimage" &&
       ["Israel", "Jordan", "Egypt", "Turkey", "Greece"].includes(l.country),
@@ -35,6 +39,7 @@ const tabs: TabDef[] = [
   {
     key: "latin-america",
     label: "Latin America & Caribbean",
+    icon: Heart,
     filterFn: (l) =>
       l.type === "mission" &&
       ["Haiti", "Honduras", "Guatemala", "Belize", "Costa Rica", "Dominican Republic", "Peru"].includes(l.country),
@@ -44,6 +49,7 @@ const tabs: TabDef[] = [
   {
     key: "africa",
     label: "Africa",
+    icon: Users,
     filterFn: (l) =>
       l.type === "mission" && ["Kenya", "Uganda", "Tanzania"].includes(l.country),
     summary:
@@ -52,6 +58,7 @@ const tabs: TabDef[] = [
   {
     key: "asia",
     label: "Asia",
+    icon: Church,
     filterFn: (l) =>
       l.type === "mission" && ["India", "Thailand", "Cambodia"].includes(l.country),
     summary:
@@ -60,6 +67,7 @@ const tabs: TabDef[] = [
   {
     key: "united-states",
     label: "United States",
+    icon: MapPin,
     filterFn: (l) => l.type === "mission" && l.country === "United States",
     summary:
       "You don\u2019t have to cross an ocean to make a difference. Domestic mission trips serve communities across the United States, from rural Appalachian housing repair to urban poverty relief in major cities and disaster response along the Gulf Coast.",
@@ -67,6 +75,7 @@ const tabs: TabDef[] = [
   {
     key: "retreats",
     label: "Retreats & Conferences",
+    icon: Mountain,
     filterFn: (l) => l.type === "retreat" || l.type === "workshop",
     summary:
       "Retreats and conferences provide focused time for spiritual renewal, worship, and leadership development. Whether it\u2019s a mountain retreat in the Colorado Rockies, a leadership renewal in Lisbon, or a worship conference in Nashville, these experiences equip your team for greater impact.",
@@ -74,6 +83,7 @@ const tabs: TabDef[] = [
   {
     key: "europe",
     label: "Europe",
+    icon: Building2,
     filterFn: (l) =>
       ["Spain", "Italy", "Portugal", "Greece"].includes(l.country),
     summary:
@@ -85,34 +95,63 @@ export function DestinationTabs({ locations }: DestinationTabsProps) {
   const [activeTab, setActiveTab] = useState("holy-land")
   const [showAll, setShowAll] = useState(false)
 
+  const handleTabSelect = useCallback((tabKey: string) => {
+    setActiveTab(tabKey)
+    setShowAll(false)
+
+    // Dispatch event to fly the map to the selected region
+    window.dispatchEvent(
+      new CustomEvent("travelRegionChange", { detail: { region: tabKey } })
+    )
+
+    // Scroll to the map section for a smooth experience
+    const mapSection = document.getElementById("destinations")
+    if (mapSection) {
+      mapSection.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [])
+
   const currentTab = tabs.find((t) => t.key === activeTab) ?? tabs[0]
   const allFiltered = locations.filter(currentTab.filterFn)
   const filtered = showAll ? allFiltered : allFiltered.slice(0, 6)
 
   return (
     <div>
-      {/* Tab Bar */}
-      <div className="relative">
-        <div className="flex overflow-x-auto gap-2 pb-2 mb-8 scrollbar-hide">
+      {/* Tab Bar - Services-style radio buttons with icons */}
+      <div className="mb-10">
+        <h3 className="text-xl font-semibold text-center font-[family-name:var(--font-playfair)] mb-6">
+          Select a Region to Explore
+        </h3>
+        <div className="flex flex-wrap justify-center gap-3">
           {tabs.map((tab) => {
             const count = locations.filter(tab.filterFn).length
             const active = activeTab === tab.key
+            const Icon = tab.icon
             return (
-              <button
+              <label
                 key={tab.key}
-                onClick={() => { setActiveTab(tab.key); setShowAll(false) }}
-                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition shrink-0 ${
+                className={`cursor-pointer relative flex items-center gap-2 rounded-[11px] px-5 py-3 text-sm font-bold transition-all duration-300 gradient-button text-white ${
                   active
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-background text-foreground hover:border-accent"
+                    ? "shadow-lg scale-[1.03]"
+                    : "gradient-button-variant shadow-sm hover:shadow-md hover:scale-[1.02]"
                 }`}
               >
-                {tab.label} ({count})
-              </button>
+                <input
+                  type="radio"
+                  name="travel-region"
+                  value={tab.key}
+                  checked={active}
+                  onChange={() => handleTabSelect(tab.key)}
+                  className="sr-only"
+                />
+                <Icon className="size-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.split(" ")[0]}</span>
+                <span className="text-xs opacity-80">({count})</span>
+              </label>
             )
           })}
         </div>
-        <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-muted/80 to-transparent pointer-events-none lg:hidden" />
       </div>
 
       {/* Regional Summary */}

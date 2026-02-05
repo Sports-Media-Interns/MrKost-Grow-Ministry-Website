@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Cookie Policy | Grow Ministry",
@@ -95,6 +96,7 @@ const cookieTableData = [
 export default function CookiePolicyPage() {
   return (
     <main className="min-h-screen flex flex-col pt-16">
+      <BreadcrumbSchema items={[{ name: "Cookie Policy", url: "https://growministry.com/cookie-policy" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
         <Image

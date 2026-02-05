@@ -16,7 +16,7 @@ const plans = [
       "Email & chat support",
     ],
     description: "Get your ministry visible online with professional social media management at an unbeatable price.",
-    buttonText: "Start Free Trial",
+    buttonText: "Get Started",
     href: "/contact",
     monthlyHref: "https://link.fastpaydirect.com/payment-link/69834f2b6503ca0689831c7a",
     yearlyHref: "https://link.fastpaydirect.com/payment-link/69834fd7c80eafa4629b6ab9",

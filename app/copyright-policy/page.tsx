@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Copyright Policy | Grow Ministry",
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function CopyrightPolicyPage() {
   return (
     <main className="min-h-screen flex flex-col pt-16">
+      <BreadcrumbSchema items={[{ name: "Copyright Policy", url: "https://growministry.com/copyright-policy" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
         <Image

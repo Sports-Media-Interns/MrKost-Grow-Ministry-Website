@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ContactForm } from "./contact-form";
 import { BookingCalendar } from "./booking-calendar";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Contact Grow Ministry | Free Church Tech Consultation",
@@ -66,16 +67,32 @@ const contactJsonLd = {
   description:
     "Contact Grow Ministry for a free consultation on AI-powered digital solutions for churches and ministries.",
   mainEntity: {
-    "@type": "Organization",
+    "@type": "ProfessionalService",
+    "@id": "https://growministry.com/#organization",
     name: "Grow Ministry",
+    url: "https://growministry.com",
+    logo: "https://growministry.com/images/logo.png",
+    image: "https://growministry.com/images/logo.png",
+    description:
+      "AI-powered digital solutions for churches and faith-based organizations. SDVOSB certified.",
     telephone: "+1-970-426-0844",
     email: "info@growministry.com",
+    priceRange: "$79-$297/month",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Severance",
       addressRegion: "CO",
       postalCode: "80550",
       addressCountry: "US",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 40.5211,
+      longitude: -104.8536,
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "United States",
     },
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
@@ -90,6 +107,10 @@ const contactJsonLd = {
       email: "info@growministry.com",
       availableLanguage: "English",
     },
+    sameAs: [
+      "https://www.linkedin.com/company/grow-ministry",
+      "https://www.facebook.com/growministry",
+    ],
   },
 };
 
@@ -100,6 +121,7 @@ export default function ContactPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
       />
+      <BreadcrumbSchema items={[{ name: "Contact", url: "https://growministry.com/contact" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-24 px-4 overflow-hidden">
         <Image

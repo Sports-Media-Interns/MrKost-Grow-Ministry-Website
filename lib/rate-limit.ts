@@ -1,3 +1,40 @@
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+/* ------------------------------------------------------------------ */
+/*  Configuration                                                      */
+/* ------------------------------------------------------------------ */
+
+const UPSTASH_REST_URL = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_REST_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const useUpstash = Boolean(UPSTASH_REST_URL && UPSTASH_REST_TOKEN);
+
+/* ------------------------------------------------------------------ */
+/*  Upstash Rate Limiter (Production)                                  */
+/* ------------------------------------------------------------------ */
+
+let upstashRatelimit: Ratelimit | null = null;
+
+if (useUpstash) {
+  const redis = new Redis({
+    url: UPSTASH_REST_URL!,
+    token: UPSTASH_REST_TOKEN!,
+  });
+
+  // Using sliding window algorithm: 5 requests per 60 seconds
+  upstashRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, "60 s"),
+    analytics: true,
+    prefix: "gm:ratelimit",
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/*  In-Memory Rate Limiter (Development Fallback)                      */
+/* ------------------------------------------------------------------ */
+
 const MAX_ENTRIES = 10_000;
 const CLEANUP_INTERVAL_MS = 60_000;
 
@@ -9,7 +46,6 @@ interface RateLimitEntry {
 const rateMap = new Map<string, RateLimitEntry>();
 let lastCleanup = Date.now();
 
-/** Remove expired entries to prevent memory leaks. */
 function cleanup(): void {
   const now = Date.now();
   if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
@@ -21,7 +57,6 @@ function cleanup(): void {
     }
   }
 
-  // Hard cap: if still too large, drop oldest entries
   if (rateMap.size > MAX_ENTRIES) {
     const excess = rateMap.size - MAX_ENTRIES;
     const keys = rateMap.keys();
@@ -32,13 +67,10 @@ function cleanup(): void {
   }
 }
 
-/**
- * In-memory rate limiter for API routes.
- * Includes automatic cleanup to prevent memory leaks.
- */
-export function rateLimit(
+function inMemoryRateLimit(
   key: string,
-  { limit = 5, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
+  limit: number,
+  windowMs: number
 ): { allowed: boolean; remaining: number } {
   cleanup();
 
@@ -56,6 +88,52 @@ export function rateLimit(
 
   entry.count++;
   return { allowed: true, remaining: limit - entry.count };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Unified Rate Limiter                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Rate limiter that uses Upstash Redis in production (when configured)
+ * and falls back to in-memory for local development.
+ *
+ * Environment variables required for production:
+ * - UPSTASH_REDIS_REST_URL
+ * - UPSTASH_REDIS_REST_TOKEN
+ */
+export async function rateLimit(
+  key: string,
+  { limit = 5, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
+): Promise<{ allowed: boolean; remaining: number }> {
+  // Use Upstash in production if configured
+  if (useUpstash && upstashRatelimit) {
+    try {
+      const result = await upstashRatelimit.limit(key);
+      return {
+        allowed: result.success,
+        remaining: result.remaining,
+      };
+    } catch (error) {
+      console.warn("[RateLimit] Upstash error, falling back to in-memory:", error);
+      // Fall through to in-memory on error
+    }
+  }
+
+  // In-memory fallback for development or if Upstash fails
+  return inMemoryRateLimit(key, limit, windowMs);
+}
+
+/**
+ * Synchronous rate limiter for backwards compatibility.
+ * Uses in-memory only (for tests and non-async contexts).
+ * @deprecated Use the async rateLimit function instead.
+ */
+export function rateLimitSync(
+  key: string,
+  { limit = 5, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
+): { allowed: boolean; remaining: number } {
+  return inMemoryRateLimit(key, limit, windowMs);
 }
 
 /** Extract client IP from request headers. */

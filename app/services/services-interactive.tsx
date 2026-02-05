@@ -171,36 +171,39 @@ export function ServicesInteractive() {
 
   return (
     <>
-      <section id="service-selector" className="py-24 px-4 scroll-mt-20">
+      <section id="service-selector" className="py-12 px-4 scroll-mt-20">
         <div className="mx-auto max-w-screen-xl">
-          {/* Service Selector - Radio Buttons */}
-          <div className="mb-16">
-            <h2 className="text-2xl font-semibold text-center font-[family-name:var(--font-playfair)] mb-8">
+          {/* Service Selector - Gradient Radio Buttons */}
+          <div className="mb-10">
+            <h2 className="text-2xl font-semibold text-center font-[family-name:var(--font-playfair)] mb-6">
               Select a Service to Learn More
             </h2>
             <div className="flex flex-wrap justify-center gap-3">
-              {services.map((service) => (
-                <label
-                  key={service.id}
-                  className={`cursor-pointer flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition ${
-                    (selectedService ?? services[0].id) === service.id
-                      ? "border-primary bg-primary text-primary-foreground shadow-md"
-                      : "border-border bg-background text-foreground hover:border-accent"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="service"
-                    value={service.id}
-                    checked={(selectedService ?? services[0].id) === service.id}
-                    onChange={() => setSelectedService(service.id)}
-                    className="sr-only"
-                  />
-                  <service.icon className="size-4" />
-                  <span className="hidden sm:inline">{service.title}</span>
-                  <span className="sm:hidden">{service.title.split(" ").slice(0, 2).join(" ")}</span>
-                </label>
-              ))}
+              {services.map((service) => {
+                const isActive = (selectedService ?? services[0].id) === service.id
+                return (
+                  <label
+                    key={service.id}
+                    className={`cursor-pointer relative flex items-center gap-2 rounded-[11px] px-5 py-3 text-sm font-bold transition-all duration-300 gradient-button text-white ${
+                      isActive
+                        ? "shadow-lg scale-[1.03]"
+                        : "gradient-button-variant shadow-sm hover:shadow-md hover:scale-[1.02]"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="service"
+                      value={service.id}
+                      checked={isActive}
+                      onChange={() => setSelectedService(service.id)}
+                      className="sr-only"
+                    />
+                    <service.icon className="size-4" />
+                    <span className="hidden sm:inline">{service.title}</span>
+                    <span className="sm:hidden">{service.title.split(" ").slice(0, 2).join(" ")}</span>
+                  </label>
+                )
+              })}
             </div>
           </div>
 
@@ -234,7 +237,7 @@ export function ServicesInteractive() {
                 <p className="text-sm font-medium">Pricing</p>
                 <p className="text-sm text-muted-foreground mt-1">{activeService.pricing}</p>
               </div>
-              <div className="mt-8">
+              <div className="mt-5">
                 <GradientButton
                   onClick={() =>
                     handleRequestInfo(activeService.downloadName, activeService.downloadUrl)
@@ -271,7 +274,7 @@ export function ServicesInteractive() {
       </section>
 
       {/* All Services Grid */}
-      <section className="py-24 px-4 bg-muted">
+      <section className="py-16 px-4 bg-muted">
         <div className="mx-auto max-w-screen-xl">
           <h2 className="text-3xl font-semibold text-center font-[family-name:var(--font-playfair)] mb-4">
             All Services at a Glance

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Grow Ministry",
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen flex flex-col pt-16">
+      <BreadcrumbSchema items={[{ name: "Privacy Policy", url: "https://growministry.com/privacy-policy" }]} />
       <article className="py-24 px-4">
         <div className="mx-auto max-w-3xl prose prose-neutral">
           <h1 className="text-4xl font-semibold font-[family-name:var(--font-playfair)]">

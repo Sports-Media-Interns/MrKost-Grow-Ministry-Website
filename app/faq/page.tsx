@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { FAQAccordion } from "./faq-accordion";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "FAQ | AI Church Solutions & Ministry Technology",
@@ -195,6 +196,7 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      <BreadcrumbSchema items={[{ name: "FAQ", url: "https://growministry.com/faq" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-24 px-4 overflow-hidden">
         <Image

@@ -85,7 +85,7 @@ function validateLead(data: unknown): LeadPayload {
 export async function POST(request: NextRequest) {
   try {
     const clientIp = getClientIp(request);
-    const { allowed } = rateLimit(`lead:${clientIp}`, { limit: 5, windowMs: 60_000 });
+    const { allowed } = await rateLimit(`lead:${clientIp}`, { limit: 5, windowMs: 60_000 });
     if (!allowed) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
@@ -96,15 +96,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = validateLead(body);
 
-    // Verify reCAPTCHA when token is provided (fail-closed for non-dev)
-    if (validated.recaptchaToken) {
-      const recaptcha = await verifyRecaptcha(validated.recaptchaToken, "lead_capture");
-      if (!recaptcha.success) {
-        return NextResponse.json(
-          { error: "reCAPTCHA verification failed. Please try again." },
-          { status: 403 }
-        );
-      }
+    // Verify reCAPTCHA token server-side (required — reject missing/empty tokens)
+    const recaptcha = await verifyRecaptcha(validated.recaptchaToken, "lead_capture");
+    if (!recaptcha.success) {
+      return NextResponse.json(
+        { error: "reCAPTCHA verification failed. Please try again." },
+        { status: 403 }
+      );
     }
 
     // Build tags based on lead type and source
@@ -140,8 +138,9 @@ export async function POST(request: NextRequest) {
     // 2) Also send to webhook (legacy backup / automation trigger)
     const webhookUrl = getGhlWebhookUrl();
     if (webhookUrl) {
+      const { recaptchaToken: _token, ...leadData } = validated;
       const webhookPayload = {
-        ...validated,
+        ...leadData,
         pageUrl: request.headers.get("referer") || "https://growministry.com",
         timestamp: new Date().toISOString(),
       };

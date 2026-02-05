@@ -3,6 +3,30 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { X, Download, Loader2 } from "lucide-react"
 
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+
+/** Get a reCAPTCHA token if the script is available. */
+async function getRecaptchaToken(action: string): Promise<string> {
+  try {
+    if (typeof window !== "undefined" && window.grecaptcha) {
+      return await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
+    }
+  } catch {
+    console.warn("[GrowMinistry] reCAPTCHA execution failed for service-modal")
+  }
+  return ""
+}
+
+/** Ensure the reCAPTCHA script is loaded (no-op if already present). */
+function loadRecaptchaScript(): void {
+  if (typeof document === "undefined" || !RECAPTCHA_SITE_KEY) return
+  if (document.querySelector(`script[src*="recaptcha/api.js"]`)) return
+  const script = document.createElement("script")
+  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
+  script.async = true
+  document.head.appendChild(script)
+}
+
 interface ServiceModalProps {
   isOpen: boolean
   onClose: () => void
@@ -47,6 +71,7 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
 
   useEffect(() => {
     if (!isOpen) return
+    loadRecaptchaScript()
     document.addEventListener("keydown", handleKeyDown)
     // Focus the modal on open
     const timer = setTimeout(() => {
@@ -65,6 +90,7 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
     setLoading(true)
 
     try {
+      const recaptchaToken = await getRecaptchaToken("lead_capture")
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,6 +102,7 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
           source: "service-modal",
           serviceName,
           offer: `${serviceName} White Paper`,
+          recaptchaToken,
         }),
       })
 

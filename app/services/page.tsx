@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ServicesInteractive } from "./services-interactive";
 import { ServicesPricing } from "./services-pricing";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Church Digital Services | AI CRM, Websites & Phone Agents",
@@ -73,6 +74,61 @@ const servicesJsonLd = {
       description:
         "Print-on-demand branded merchandise stores for churches and ministries, including apparel, accessories, and custom items.",
     },
+    // Pricing Offers
+    {
+      "@type": "Offer",
+      name: "Essentials Plan",
+      description:
+        "Social media management tool with multi-platform scheduling, content calendar, analytics, and AI-assisted post generation.",
+      price: "13.00",
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "13.00",
+        priceCurrency: "USD",
+        unitCode: "MON",
+        billingIncrement: 1,
+      },
+      seller: { "@type": "Organization", name: "Grow Ministry" },
+      url: "https://growministry.com/services#pricing",
+      availability: "https://schema.org/InStock",
+    },
+    {
+      "@type": "Offer",
+      name: "Growth Plan",
+      description:
+        "Complete digital toolkit including CRM, social media management, contact tracking, automated follow-up, and AI-assisted messaging. First year free.",
+      price: "79.00",
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "79.00",
+        priceCurrency: "USD",
+        unitCode: "MON",
+        billingIncrement: 1,
+      },
+      seller: { "@type": "Organization", name: "Grow Ministry" },
+      url: "https://growministry.com/services#pricing",
+      availability: "https://schema.org/InStock",
+    },
+    {
+      "@type": "Offer",
+      name: "Enterprise Plan",
+      description:
+        "Full integrated ecosystem with AI Telephone Agent, custom website, SEO/AEO, managed social media, branded merchandise store, and dedicated account manager.",
+      price: "297.00",
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "297.00",
+        priceCurrency: "USD",
+        unitCode: "MON",
+        billingIncrement: 1,
+      },
+      seller: { "@type": "Organization", name: "Grow Ministry" },
+      url: "https://growministry.com/services#pricing",
+      availability: "https://schema.org/InStock",
+    },
   ],
 };
 
@@ -83,6 +139,7 @@ export default function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
       />
+      <BreadcrumbSchema items={[{ name: "Services", url: "https://growministry.com/services" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-24 px-4 overflow-hidden">
         <Image

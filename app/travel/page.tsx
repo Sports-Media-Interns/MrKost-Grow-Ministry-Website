@@ -6,6 +6,7 @@ import type { TravelLocation } from "@/components/ui/travel-map";
 import { TravelMapWrapper } from "@/components/ui/travel-map-wrapper";
 import { TripPlanner } from "./trip-planner";
 import { DestinationTabs } from "./destination-tabs";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Faith-Based Travel | Mission Trips & Pilgrimages",
@@ -353,6 +354,7 @@ export default function TravelPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(travelJsonLd) }}
       />
+      <BreadcrumbSchema items={[{ name: "Travel", url: "https://growministry.com/travel" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-24 px-4 overflow-hidden">
         <Image

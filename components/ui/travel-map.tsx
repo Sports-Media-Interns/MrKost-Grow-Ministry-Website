@@ -43,9 +43,38 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;")
 }
 
+// Region center coordinates for fly-to animations
+const regionCenters: Record<string, { center: [number, number]; zoom: number }> = {
+  "all": { center: [10, 20], zoom: 1.5 },
+  "holy-land": { center: [35.5, 31.5], zoom: 5 },
+  "latin-america": { center: [-80, 15], zoom: 3.5 },
+  "africa": { center: [35, 0], zoom: 3.5 },
+  "asia": { center: [100, 15], zoom: 3.5 },
+  "united-states": { center: [-98, 38], zoom: 3.5 },
+  "retreats": { center: [-105, 40], zoom: 3.5 },
+  "europe": { center: [5, 45], zoom: 4 },
+}
+
 export function TravelMap({ locations }: TravelMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
+
+  // Listen for region change events from DestinationTabs
+  useEffect(() => {
+    const handleRegionChange = (e: CustomEvent<{ region: string }>) => {
+      if (!map.current) return
+      const region = e.detail.region
+      const target = regionCenters[region] || regionCenters["all"]
+      map.current.flyTo({
+        center: target.center,
+        zoom: target.zoom,
+        duration: 1500,
+      })
+    }
+
+    window.addEventListener("travelRegionChange", handleRegionChange as EventListener)
+    return () => window.removeEventListener("travelRegionChange", handleRegionChange as EventListener)
+  }, [])
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return

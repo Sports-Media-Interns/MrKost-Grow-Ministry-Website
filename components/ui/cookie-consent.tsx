@@ -31,6 +31,32 @@ interface VisitorData {
   currentPageUrl: string
 }
 
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+
+/* ------------------------------------------------------------------ */
+/*  reCAPTCHA                                                         */
+/* ------------------------------------------------------------------ */
+
+function loadRecaptchaScript(): void {
+  if (typeof document === "undefined" || !RECAPTCHA_SITE_KEY) return
+  if (document.querySelector(`script[src*="recaptcha/api.js"]`)) return
+  const script = document.createElement("script")
+  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
+  script.async = true
+  document.head.appendChild(script)
+}
+
+async function getRecaptchaToken(action: string): Promise<string> {
+  try {
+    if (typeof window !== "undefined" && window.grecaptcha) {
+      return await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
+    }
+  } catch {
+    console.warn("[GrowMinistry] reCAPTCHA execution failed for cookie-consent")
+  }
+  return ""
+}
+
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
@@ -96,7 +122,7 @@ function buildVisitorData(): VisitorData {
   }
 }
 
-async function sendCookieConsentLead(data: Record<string, unknown>): Promise<void> {
+async function sendCookieConsentLead(data: Record<string, unknown>, recaptchaToken: string): Promise<void> {
   try {
     await fetch("/api/lead", {
       method: "POST",
@@ -106,6 +132,7 @@ async function sendCookieConsentLead(data: Record<string, unknown>): Promise<voi
         name: "Anonymous Visitor",
         email: "visitor@growministry.com",
         source: "cookie-consent",
+        recaptchaToken,
         ...data,
       }),
     })
@@ -129,8 +156,10 @@ export function CookieConsent() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const lastPathRef = useRef<string>("")
 
-  /* ---- initialize visitor tracking ---- */
+  /* ---- initialize visitor tracking + load reCAPTCHA ---- */
   useEffect(() => {
+    loadRecaptchaScript()
+
     // If consent already given, do not show banner
     const consent = localStorage.getItem("gm_cookie_consent")
     if (consent) {
@@ -191,7 +220,7 @@ export function CookieConsent() {
 
   /* ---- acceptance handlers ---- */
   const accept = useCallback(
-    (prefs: Omit<CookiePreferences, "essential" | "timestamp">) => {
+    async (prefs: Omit<CookiePreferences, "essential" | "timestamp">) => {
       const preferences: CookiePreferences = {
         essential: true,
         analytics: prefs.analytics,
@@ -203,11 +232,15 @@ export function CookieConsent() {
       localStorage.setItem("gm_cookie_consent", JSON.stringify(preferences))
       persistVisitorData()
 
-      // Send consent data through server API (keeps webhook URL server-only)
+      // Dispatch event for other components (e.g., GoogleAnalytics)
+      window.dispatchEvent(new CustomEvent("cookieConsentChange"))
+
+      // Get reCAPTCHA token and send consent data through server API
+      const recaptchaToken = await getRecaptchaToken("lead_capture")
       sendCookieConsentLead({
         preferences,
         visitor: visitorRef.current,
-      })
+      }, recaptchaToken)
 
       setVisible(false)
     },
@@ -225,6 +258,18 @@ export function CookieConsent() {
   const handleSaveCustom = useCallback(() => {
     accept({ analytics, marketing, functional })
   }, [accept, analytics, marketing, functional])
+
+  /* ---- keyboard: Escape to accept essential only ---- */
+  useEffect(() => {
+    if (!visible) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleEssentialOnly()
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [visible, handleEssentialOnly])
 
   /* ---- render ---- */
   if (!visible) return null

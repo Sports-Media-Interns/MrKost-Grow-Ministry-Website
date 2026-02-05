@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Globe, Phone, Users, Share2, ShoppingBag, Plane, FileText, Home, Info, HelpCircle, Mail, ScrollText, Shield } from "lucide-react";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Sitemap | Grow Ministry",
@@ -88,6 +89,7 @@ const siteStructure = [
 export default function SitemapPage() {
   return (
     <main className="min-h-screen flex flex-col pt-16">
+      <BreadcrumbSchema items={[{ name: "Sitemap", url: "https://growministry.com/sitemap" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
         <Image

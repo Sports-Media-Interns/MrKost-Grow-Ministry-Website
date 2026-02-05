@@ -4,6 +4,37 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { X, Download } from "lucide-react"
 import Image from "next/image"
 
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+
+/* ------------------------------------------------------------------ */
+/*  Focus trap selector                                                */
+/* ------------------------------------------------------------------ */
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+/** Get a reCAPTCHA token if the script is available, otherwise return empty string. */
+async function getRecaptchaToken(action: string): Promise<string> {
+  try {
+    if (typeof window !== "undefined" && window.grecaptcha) {
+      return await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
+    }
+  } catch {
+    console.warn("[GrowMinistry] reCAPTCHA execution failed for exit-intent")
+  }
+  return ""
+}
+
+/** Ensure the reCAPTCHA script is loaded (no-op if already present). */
+function loadRecaptchaScript(): void {
+  if (typeof document === "undefined" || !RECAPTCHA_SITE_KEY) return
+  if (document.querySelector(`script[src*="recaptcha/api.js"]`)) return
+  const script = document.createElement("script")
+  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
+  script.async = true
+  document.head.appendChild(script)
+}
+
 /* ------------------------------------------------------------------ */
 /*  Submit via server-side API (creates GHL contact with tag)          */
 /* ------------------------------------------------------------------ */
@@ -34,6 +65,7 @@ export function ExitIntent() {
   const readyRef = useRef(false)
   const shownThisSession = useRef(false)
   const loadTimestamp = useRef(0)
+  const modalRef = useRef<HTMLDivElement>(null)
 
   /* ---- gate checks ---- */
   const canShow = useCallback((): boolean => {
@@ -49,8 +81,9 @@ export function ExitIntent() {
     setIsOpen(true)
   }, [canShow])
 
-  /* ---- mount: attach exit-intent listeners ---- */
+  /* ---- mount: load reCAPTCHA + attach exit-intent listeners ---- */
   useEffect(() => {
+    loadRecaptchaScript()
     loadTimestamp.current = Date.now()
 
     // Mark ready after 10 s delay
@@ -108,12 +141,15 @@ export function ExitIntent() {
 
     setIsSubmitting(true)
 
+    const recaptchaToken = await getRecaptchaToken("lead_capture")
+
     await submitLead({
       type: "exit_intent_lead",
       name: name.trim(),
       email: email.trim(),
       source: "exit-intent",
       offer: "Ministry Technology Master Report",
+      recaptchaToken,
     })
 
     setSubmitted(true)
@@ -122,9 +158,48 @@ export function ExitIntent() {
   }
 
   /* ---- close (without marking sessionStorage — can re-trigger) ---- */
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false)
-  }
+  }, [])
+
+  /* ---- keyboard: Escape to close + focus trap ---- */
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose()
+        return
+      }
+      // Focus trap
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    },
+    [handleClose]
+  )
+
+  /* ---- attach keyboard listener when modal is open ---- */
+  useEffect(() => {
+    if (!isOpen) return
+    document.addEventListener("keydown", handleKeyDown)
+    // Focus first input on open
+    const timer = setTimeout(() => {
+      modalRef.current?.querySelector<HTMLElement>("input, button")?.focus()
+    }, 0)
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+      clearTimeout(timer)
+    }
+  }, [isOpen, handleKeyDown])
 
   /* ---- backdrop click ---- */
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -159,7 +234,7 @@ export function ExitIntent() {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* card */}
-      <div className="relative w-full max-w-md rounded-2xl bg-background shadow-2xl animate-[scaleIn_0.35s_ease-out]">
+      <div ref={modalRef} className="relative w-full max-w-md rounded-2xl bg-background shadow-2xl animate-[scaleIn_0.35s_ease-out]">
         {/* close button */}
         <button
           onClick={handleClose}

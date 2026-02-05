@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Shield, Heart, Users, Lightbulb, Award, Building } from "lucide-react";
 import { GradientButton } from "@/components/ui/gradient-button";
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "About Grow Ministry | Veteran-Owned Church Tech Company",
@@ -93,6 +94,7 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
       />
+      <BreadcrumbSchema items={[{ name: "About", url: "https://growministry.com/about" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-24 px-4 overflow-hidden">
         <Image

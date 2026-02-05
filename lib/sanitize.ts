@@ -1,20 +1,15 @@
 /**
  * Sanitize a string by removing HTML tags and trimming whitespace.
- * Prevents XSS when forwarding data to webhooks.
+ * For CRM/webhook data, we strip dangerous tags but keep normal text as-is.
+ * No entity encoding since CRM stores plain text, not HTML.
  */
 export function sanitizeString(input: string): string {
   return input
-    .replace(/<[^>]*>/g, "") // strip HTML tags
-    .replace(/[<>"'&]/g, (char) => {
-      const entities: Record<string, string> = {
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-        "&": "&amp;",
-      };
-      return entities[char] || char;
-    })
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "") // strip script tags
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "") // strip style tags
+    .replace(/<[^>]*>/g, "") // strip remaining HTML tags
+    .replace(/javascript:/gi, "") // remove javascript: URIs
+    .replace(/on\w+\s*=/gi, "") // remove event handlers
     .trim();
 }
 

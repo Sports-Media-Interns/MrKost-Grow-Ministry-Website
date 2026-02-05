@@ -1,44 +1,44 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { rateLimit, getClientIp, _resetRateMap } from "@/lib/rate-limit";
+import { rateLimitSync, getClientIp, _resetRateMap } from "@/lib/rate-limit";
 
-describe("rateLimit", () => {
+describe("rateLimitSync", () => {
   beforeEach(() => {
     _resetRateMap();
   });
 
   it("allows requests within the limit", () => {
-    const result = rateLimit("test-allow", { limit: 3 });
+    const result = rateLimitSync("test-allow", { limit: 3 });
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(2);
   });
 
   it("blocks requests exceeding the limit", () => {
-    rateLimit("test-block", { limit: 2 });
-    rateLimit("test-block", { limit: 2 });
-    const result = rateLimit("test-block", { limit: 2 });
+    rateLimitSync("test-block", { limit: 2 });
+    rateLimitSync("test-block", { limit: 2 });
+    const result = rateLimitSync("test-block", { limit: 2 });
     expect(result.allowed).toBe(false);
     expect(result.remaining).toBe(0);
   });
 
   it("tracks remaining correctly", () => {
-    expect(rateLimit("test-remaining", { limit: 3 }).remaining).toBe(2);
-    expect(rateLimit("test-remaining", { limit: 3 }).remaining).toBe(1);
-    expect(rateLimit("test-remaining", { limit: 3 }).remaining).toBe(0);
+    expect(rateLimitSync("test-remaining", { limit: 3 }).remaining).toBe(2);
+    expect(rateLimitSync("test-remaining", { limit: 3 }).remaining).toBe(1);
+    expect(rateLimitSync("test-remaining", { limit: 3 }).remaining).toBe(0);
   });
 
   it("uses separate counters per key", () => {
-    rateLimit("key-a", { limit: 1 });
-    const resultA = rateLimit("key-a", { limit: 1 });
-    const resultB = rateLimit("key-b", { limit: 1 });
+    rateLimitSync("key-a", { limit: 1 });
+    const resultA = rateLimitSync("key-a", { limit: 1 });
+    const resultB = rateLimitSync("key-b", { limit: 1 });
     expect(resultA.allowed).toBe(false);
     expect(resultB.allowed).toBe(true);
   });
 
   it("uses default limit of 5", () => {
     for (let i = 0; i < 5; i++) {
-      expect(rateLimit("default-limit").allowed).toBe(true);
+      expect(rateLimitSync("default-limit").allowed).toBe(true);
     }
-    expect(rateLimit("default-limit").allowed).toBe(false);
+    expect(rateLimitSync("default-limit").allowed).toBe(false);
   });
 });
 
