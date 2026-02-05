@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
 import Script from "next/script";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
@@ -66,13 +65,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const nonce = (await headers()).get("x-nonce") ?? "";
-
   return (
     <html lang="en">
       <head>
@@ -91,14 +88,12 @@ export default async function RootLayout({
         </a>
         {/* GA4 - only loads when user accepts analytics cookies */}
         <GoogleAnalytics />
-        {/* GHL Chat Widget — SRI hash verified, crossorigin for CORS enforcement */}
+        {/* GHL Chat Widget */}
         <Script
           src="https://widgets.leadconnectorhq.com/loader.js"
           data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
           data-widget-id="67f69cbfa99c36de4915acce"
           strategy="afterInteractive"
-          nonce={nonce}
-          integrity="sha384-YmiRGC54k689pI/l1ttGWOpRs+FCEkFmIPOuAS0EdBR80u/lUeQ3pZa1uhDgz6NV"
           crossOrigin="anonymous"
         />
         <ErrorBoundary>
