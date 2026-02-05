@@ -187,11 +187,20 @@ export default function ContactPage() {
             </div>
 
             {/* SDVOSB Badge */}
-            <div className="mt-12 p-6 rounded-xl bg-muted">
-              <p className="text-sm font-semibold mb-1">SDVOSB Certified</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Grow Ministry is a Service-Disabled Veteran-Owned Small Business, a Dakdan Worldwide company. CAGE Code: 9W3P6 | UEI: H5BQG2J7JRB4
-              </p>
+            <div className="mt-12 flex items-center gap-4 rounded-xl bg-muted px-4 py-3">
+              <Image
+                src="/images/sdvosb-certified.webp"
+                alt="Service-Disabled Veteran-Owned Small Business Certified"
+                width={110}
+                height={110}
+                className="shrink-0 object-contain"
+              />
+              <div>
+                <p className="text-sm font-semibold">SDVOSB Certified</p>
+                <p className="text-xs text-muted-foreground">
+                  CAGE: 9W3P6 &bull; UEI: H5BQG2J7JRB4
+                </p>
+              </div>
             </div>
           </div>
         </div>
