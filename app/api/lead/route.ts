@@ -10,6 +10,7 @@ import {
 import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createGHLContact } from "@/lib/ghl";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 /** Whitelist of extra fields allowed beyond the core fields. */
 const ALLOWED_EXTRA_FIELDS = new Set([
@@ -159,6 +160,27 @@ export async function POST(request: NextRequest) {
         console.warn("[Lead API] Webhook delivery failed (non-critical)");
       } finally {
         clearTimeout(timeout);
+      }
+    }
+
+    // 3) Save to Supabase (non-blocking — don't fail the request if DB is down)
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { recaptchaToken, name, email, phone, type, source, ...extraFields } = validated;
+        await supabase.from("leads").insert({
+          type: validated.type,
+          name: validated.name,
+          email: validated.email,
+          phone: validated.phone || null,
+          source: validated.source,
+          ghl_contact_id: ghlResult.contactId || null,
+          extra: Object.keys(extraFields).length > 0 ? extraFields : null,
+          page_url: request.headers.get("referer") || null,
+        });
+      } catch {
+        console.warn("[Lead API] Supabase insert failed (non-critical)");
       }
     }
 

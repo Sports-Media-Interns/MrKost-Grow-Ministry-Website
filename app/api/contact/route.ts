@@ -11,6 +11,7 @@ import {
 import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createGHLContact } from "@/lib/ghl";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 interface ContactPayload {
   name: string;
@@ -113,6 +114,26 @@ export async function POST(request: NextRequest) {
         console.warn("[Contact API] Webhook delivery failed (non-critical)");
       } finally {
         clearTimeout(timeout);
+      }
+    }
+
+    // 3) Save to Supabase (non-blocking — don't fail the request if DB is down)
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      try {
+        await supabase.from("contacts").insert({
+          name: validated.name,
+          email: validated.email,
+          phone: validated.phone,
+          organization: validated.organization || null,
+          service: validated.service,
+          message: validated.message,
+          source: "website-contact-form",
+          ghl_contact_id: ghlResult.contactId || null,
+          page_url: request.headers.get("referer") || null,
+        });
+      } catch {
+        console.warn("[Contact API] Supabase insert failed (non-critical)");
       }
     }
 
