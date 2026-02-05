@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              `script-src 'self' 'strict-dynamic' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://widgets.leadconnectorhq.com https://stcdn.leadconnectorhq.com`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://widgets.leadconnectorhq.com https://stcdn.leadconnectorhq.com`,
               "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://stcdn.leadconnectorhq.com",
               "img-src 'self' data: blob: https://*.mapbox.com https://www.googletagmanager.com https://images.leadconnectorhq.com https://stcdn.leadconnectorhq.com",
               "font-src 'self' data: https://stcdn.leadconnectorhq.com",
