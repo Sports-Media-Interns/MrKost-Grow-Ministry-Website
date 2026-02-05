@@ -45,3 +45,5 @@ nul
 
 # sentry
 .sentryclirc
+
+.vercel

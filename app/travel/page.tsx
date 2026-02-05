@@ -302,7 +302,7 @@ const tripTypes = [
     description: "Walk where biblical figures walked. Deepen your faith through immersive journeys to the Holy Land and beyond.",
     count: locations.filter((l) => l.type === "pilgrimage").length,
     gradient: "from-primary/90 to-primary/60",
-    image: "/images/heroes/contact-hero.webp",
+    image: "/images/services/grow-ministry-travel-1006.jpg",
   },
   {
     icon: Heart,
@@ -318,7 +318,7 @@ const tripTypes = [
     description: "Learn from leading ministry voices at worship conferences and leadership development events.",
     count: locations.filter((l) => l.type === "workshop").length,
     gradient: "from-primary/90 to-primary/60",
-    image: "/images/heroes/services-hero.webp",
+    image: "/images/services/grow-ministry-web-3003.jpg",
   },
 ];
 
