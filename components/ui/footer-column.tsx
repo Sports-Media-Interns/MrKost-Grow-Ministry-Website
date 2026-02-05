@@ -53,8 +53,8 @@ const serviceLinks = [
 const aboutLinks = [
   { text: 'About Us', href: '/about' },
   { text: 'FAQ', href: '/faq' },
-  { text: 'Press', href: 'https://growministry.com/blog/', external: true },
   { text: 'Contact', href: '/contact' },
+  { text: 'Careers', href: 'https://my.usaev.net/v2/preview/B6tJvSKhe5A2swg3QgaL', external: true },
   { text: 'Internships', href: 'https://my.usaev.net/v2/preview/HdNRJ2eV8bSk1sndSQup', external: true },
   { text: 'Skillbridge', href: 'https://my.usaev.net/v2/preview/vZvbFocFnB7w23DyleMB', external: true },
 ];
@@ -64,6 +64,7 @@ const legalLinks = [
   { text: 'Terms of Service', href: '/terms' },
   { text: 'Cookie Policy', href: '/cookie-policy' },
   { text: 'Copyright Policy', href: '/copyright-policy' },
+  { text: 'Press', href: 'https://growministry.com/blog/', external: true },
 ];
 
 const contactInfo = [
@@ -198,14 +199,25 @@ export default function Footer4Col() {
             <div className="text-center sm:text-left">
               <p className="text-lg font-medium">Legal</p>
               <ul className="mt-8 space-y-4 text-sm">
-                {legalLinks.map(({ text, href }) => (
+                {legalLinks.map(({ text, href, external }) => (
                   <li key={text}>
-                    <Link
-                      className="text-primary-foreground/60 hover:text-accent transition"
-                      href={href}
-                    >
-                      {text}
-                    </Link>
+                    {external ? (
+                      <a
+                        className="text-primary-foreground/60 hover:text-accent transition"
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {text}
+                      </a>
+                    ) : (
+                      <Link
+                        className="text-primary-foreground/60 hover:text-accent transition"
+                        href={href}
+                      >
+                        {text}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
