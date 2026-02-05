@@ -56,6 +56,7 @@ const aboutLinks = [
   { text: 'Press', href: 'https://growministry.com/blog/', external: true },
   { text: 'Contact', href: '/contact' },
   { text: 'Internships', href: 'https://my.usaev.net/v2/preview/HdNRJ2eV8bSk1sndSQup', external: true },
+  { text: 'Skillbridge', href: 'https://my.usaev.net/v2/preview/vZvbFocFnB7w23DyleMB', external: true },
 ];
 
 const legalLinks = [
