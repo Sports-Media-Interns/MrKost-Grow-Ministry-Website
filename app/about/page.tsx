@@ -150,7 +150,7 @@ export default function AboutPage() {
           <div className="flex justify-center">
             <div className="relative">
               <Image
-                src="/images/dankost-portrait.png"
+                src="/images/dankost-portrait.webp"
                 alt="Dan Kost - CEO & Founder"
                 width={400}
                 height={500}
@@ -158,7 +158,7 @@ export default function AboutPage() {
               />
               <div className="absolute -bottom-4 -right-4 bg-background rounded-xl shadow-lg p-4">
                 <Image
-                  src="/images/sdvosb-certified.png"
+                  src="/images/sdvosb-certified.webp"
                   alt="SDVOSB Certified"
                   width={80}
                   height={80}

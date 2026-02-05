@@ -118,7 +118,7 @@ export default function Footer4Col() {
             <div className="mt-6 flex flex-col items-center sm:items-start gap-3">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/images/sdvosb-certified.png"
+                  src="/images/sdvosb-certified.webp"
                   alt="Service-Disabled Veteran-Owned Small Business Certified"
                   width={50}
                   height={50}
