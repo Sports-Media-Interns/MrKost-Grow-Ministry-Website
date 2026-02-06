@@ -929,7 +929,7 @@ export default function CookiePolicyPage() {
                   Privacy Policy
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  &mdash; Full details on how we collect, use, and protect your
+                  - Full details on how we collect, use, and protect your
                   personal information.
                 </span>
               </li>
@@ -941,7 +941,7 @@ export default function CookiePolicyPage() {
                   Terms of Service
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  &mdash; The terms governing your use of our Site and services.
+                  - The terms governing your use of our Site and services.
                 </span>
               </li>
             </ul>

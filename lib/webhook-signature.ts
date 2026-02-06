@@ -2,6 +2,7 @@
  * HMAC-SHA256 signature for outgoing webhook payloads.
  * Allows receiving systems to verify payload authenticity.
  */
+import { timingSafeEqual } from "node:crypto";
 
 const WEBHOOK_SECRET = process.env.WEBHOOK_SIGNING_SECRET || "";
 
@@ -59,7 +60,8 @@ export async function verifyWebhookSignature(
   if (!verifyWebhookTimestamp(timestamp, maxAgeMs)) return false;
 
   const expected = await signPayload(`${timestamp}.${payload}`);
-  return expected === signature;
+  if (expected.length !== signature.length) return false;
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
 /**

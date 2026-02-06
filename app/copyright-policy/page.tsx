@@ -705,7 +705,7 @@ export default function CopyrightPolicyPage() {
                   Privacy Policy
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  &mdash; Full details on how we collect, use, and protect your
+                  - Full details on how we collect, use, and protect your
                   personal information.
                 </span>
               </li>
@@ -717,7 +717,7 @@ export default function CopyrightPolicyPage() {
                   Terms of Service
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  &mdash; The terms governing your use of our Site and services.
+                  - The terms governing your use of our Site and services.
                 </span>
               </li>
               <li>
@@ -728,7 +728,7 @@ export default function CopyrightPolicyPage() {
                   Cookie Policy
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  &mdash; How we use cookies and similar technologies on our
+                  - How we use cookies and similar technologies on our
                   Site.
                 </span>
               </li>

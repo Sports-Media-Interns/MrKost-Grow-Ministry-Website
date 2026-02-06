@@ -45,11 +45,11 @@ const faqs = [
       },
       {
         q: "Who is Grow Ministry designed for?",
-        a: "Our services are built for faith-based organizations of all sizes — from small congregations to multi-campus ministries, faith-driven nonprofits, and religious educational institutions.",
+        a: "Our services are built for faith-based organizations of all sizes - from small congregations to multi-campus ministries, faith-driven nonprofits, and religious educational institutions.",
       },
       {
         q: "What makes Grow Ministry different from other digital agencies?",
-        a: "We are 100% focused on faith-based organizations. Every tool we build respects doctrinal integrity with strict AI boundaries — no counseling, pastoral care, or preaching. Technology serves ministry leadership, never replaces it. Plus, our integrated ecosystem means one partner for your entire digital presence.",
+        a: "We are 100% focused on faith-based organizations. Every tool we build respects doctrinal integrity with strict AI boundaries - no counseling, pastoral care, or preaching. Technology serves ministry leadership, never replaces it. Plus, our integrated ecosystem means one partner for your entire digital presence.",
       },
       {
         q: "Is Grow Ministry a certified veteran-owned business?",
@@ -83,11 +83,11 @@ const faqs = [
       },
       {
         q: "Is the AI Telephone Agent safe for sensitive calls?",
-        a: "Yes. The system includes crisis safeguards with immediate escalation to human staff. The AI never provides counseling or pastoral care — it handles administrative tasks and information requests while ensuring sensitive calls reach a real person immediately.",
+        a: "Yes. The system includes crisis safeguards with immediate escalation to human staff. The AI never provides counseling or pastoral care - it handles administrative tasks and information requests while ensuring sensitive calls reach a real person immediately.",
       },
       {
         q: "What happens if someone calls after hours?",
-        a: "The AI Telephone Agent operates around the clock. After-hours callers receive the same professional experience — their questions are answered, messages are logged in the CRM, and urgent matters are escalated according to your custom protocols.",
+        a: "The AI Telephone Agent operates around the clock. After-hours callers receive the same professional experience - their questions are answered, messages are logged in the CRM, and urgent matters are escalated according to your custom protocols.",
       },
     ],
   },
@@ -96,7 +96,7 @@ const faqs = [
     questions: [
       {
         q: "Which social media platforms are supported?",
-        a: "Our platform supports scheduling and management across Facebook, Instagram, X (Twitter), and LinkedIn — all from a single dashboard.",
+        a: "Our platform supports scheduling and management across Facebook, Instagram, X (Twitter), and LinkedIn - all from a single dashboard.",
       },
       {
         q: "Can you manage our social media for us?",
@@ -147,7 +147,7 @@ const faqs = [
     questions: [
       {
         q: "How does the merchandise store work?",
-        a: "We set up a turnkey print-on-demand store for your ministry with 150+ customizable products including apparel, drinkware, accessories, and home and office items. There is zero inventory risk — products are printed and shipped on demand when ordered.",
+        a: "We set up a turnkey print-on-demand store for your ministry with 150+ customizable products including apparel, drinkware, accessories, and home and office items. There is zero inventory risk - products are printed and shipped on demand when ordered.",
       },
       {
         q: "What does it cost to launch a store?",
@@ -168,7 +168,7 @@ const faqs = [
       },
       {
         q: "Is there a contract or long-term commitment?",
-        a: "We believe in earning your trust through results, not contracts. Service terms vary — the CRM offers a free first year, social media is month-to-month, and project-based services like website development have defined scopes. Contact us for specifics on any service.",
+        a: "We believe in earning your trust through results, not contracts. Service terms vary - the CRM offers a free first year, social media is month-to-month, and project-based services like website development have defined scopes. Contact us for specifics on any service.",
       },
     ],
   },

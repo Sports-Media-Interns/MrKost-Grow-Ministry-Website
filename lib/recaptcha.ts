@@ -20,7 +20,7 @@ export async function verifyRecaptcha(
   // Skip verification only in development when no key is configured
   if (!secretKey) {
     if (process.env.NODE_ENV === "development") {
-      console.warn("[reCAPTCHA] No secret key configured — skipping in dev mode");
+      console.warn("[reCAPTCHA] No secret key configured -- skipping in dev mode");
       return { success: true, score: 1.0 };
     }
     console.error("[reCAPTCHA] No secret key configured in production");

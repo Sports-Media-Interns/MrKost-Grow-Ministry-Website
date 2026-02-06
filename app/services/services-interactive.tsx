@@ -39,7 +39,7 @@ const services = [
       "AI-assisted drafting for messages and care summaries",
       "Weekly leadership scorecards with growth and engagement metrics",
     ],
-    pricing: "$79/month or $63/month billed annually — Free first year, no credit card required",
+    pricing: "$79/month or $63/month billed annually - Free first year, no credit card required",
     downloadUrl: "/downloads/GM_CRM_White_Paper.pdf",
     downloadName: "CRM",
   },
@@ -57,7 +57,7 @@ const services = [
       "Approval workflows for theological accuracy and brand consistency",
       "AI-assisted content generation for posts, captions, and hashtags",
     ],
-    pricing: "$13/month or $10/month billed annually — Managed Plan at $297/month",
+    pricing: "$13/month or $10/month billed annually - Managed Plan at $297/month",
     downloadUrl: "/downloads/GM_Social_Media_White_Paper.pdf",
     downloadName: "Social Media",
   },
@@ -75,7 +75,7 @@ const services = [
       "Workflow automation for follow-ups, donations, and event reminders",
       "Structured data and FAQ schema for enhanced search visibility",
     ],
-    pricing: "Project-based — Contact for a customized proposal",
+    pricing: "Project-based - Contact for a customized proposal",
     downloadUrl: "/downloads/GM_Website_SEO_AEO_White_Paper.pdf",
     downloadName: "Website & SEO",
   },
@@ -93,7 +93,7 @@ const services = [
       "Customizable itineraries aligned with your spiritual goals",
       "CRM integration for seamless group communication",
     ],
-    pricing: "Starting at ~$2,500 per person — Payment plans available",
+    pricing: "Starting at ~$2,500 per person - Payment plans available",
     downloadUrl: "/downloads/GM_Travel_White_Paper.pdf",
     downloadName: "Travel",
   },
@@ -105,7 +105,7 @@ const services = [
     image: "/images/services/swag-store.webp",
     description: "A turnkey print-on-demand merchandise store for your ministry. Launch a branded online store with 150+ customizable products and zero inventory risk. We handle design, fulfillment, and shipping.",
     features: [
-      "Zero inventory risk — print and ship on demand",
+      "Zero inventory risk - print and ship on demand",
       "150+ products: apparel, drinkware, accessories, home and office",
       "Passive revenue stream without additional staff",
       "Full brand control reflecting your ministry's visual identity",
@@ -124,12 +124,12 @@ const services = [
     description: "A comprehensive overview of the entire Grow Ministry platform. Addresses the modern ministry challenge of administrative overload and positions technology as a servant to ministry leadership.",
     features: [
       "Single integrated ecosystem eliminating multiple vendor juggling",
-      "Strict AI boundaries — no counseling, pastoral care, or preaching",
+      "Strict AI boundaries - no counseling, pastoral care, or preaching",
       "Consolidated pricing overview across all services",
       "Data-driven leadership scorecards for pastoral clarity",
       "Doctrinal integrity safeguards for all AI-generated content",
     ],
-    pricing: "Free download — Overview of all services and pricing",
+    pricing: "Free download - Overview of all services and pricing",
     downloadUrl: "/downloads/GM_Master_Report_Ministry_Technology.pdf",
     downloadName: "Master Report",
   },
@@ -314,7 +314,7 @@ export function ServicesInteractive() {
                   </div>
                   <p className="text-xs text-muted-foreground mb-3">{service.tagline}</p>
                   <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">{service.pricing.split("—")[0].trim()}</p>
+                    <p className="text-xs text-muted-foreground">{service.pricing.split(" - ")[0].trim()}</p>
                     <button
                       onClick={() => handleRequestInfo(service.downloadName, service.downloadUrl)}
                       className="text-xs font-medium text-primary hover:text-accent transition whitespace-nowrap"

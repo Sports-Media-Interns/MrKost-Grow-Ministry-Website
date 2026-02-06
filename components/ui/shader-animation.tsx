@@ -74,7 +74,7 @@ export function ShaderAnimation() {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true })
     } catch {
-      // WebGL not supported — silently fail, container keeps its black background
+      // WebGL not supported -- silently fail, container keeps its black background
       return
     }
     renderer.setPixelRatio(window.devicePixelRatio)

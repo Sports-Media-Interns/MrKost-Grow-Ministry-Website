@@ -3,7 +3,7 @@ import type { Database } from "@/lib/database.types";
 
 /**
  * Server-side Supabase client using the service role key.
- * Only use this in API routes / server components — never expose to the browser.
+ * Only use this in API routes / server components -- never expose to the browser.
  */
 export function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

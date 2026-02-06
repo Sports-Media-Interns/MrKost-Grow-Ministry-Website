@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
     const validated = validateContact(body);
 
-    // Verify reCAPTCHA token server-side (required — reject missing/empty tokens)
+    // Verify reCAPTCHA token server-side (required -- reject missing/empty tokens)
     const recaptcha = await verifyRecaptcha(validated.recaptchaToken, "contact_form");
     if (!recaptcha.success) {
       return NextResponse.json(

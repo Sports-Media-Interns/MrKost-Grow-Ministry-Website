@@ -40,7 +40,7 @@ test.describe("Contact Form", () => {
     await expect(contactPage.serviceSelect).toHaveAttribute("required", "");
     await expect(contactPage.messageInput).toHaveAttribute("required", "");
 
-    // Organization is optional — no required attribute
+    // Organization is optional -- no required attribute
     const orgRequired = await contactPage.orgInput.getAttribute("required");
     expect(orgRequired).toBeNull();
   });

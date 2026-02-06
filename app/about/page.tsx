@@ -51,7 +51,7 @@ const values = [
   {
     icon: Lightbulb,
     title: "Innovation with Purpose",
-    description: "We leverage cutting-edge technology — AI, automation, and data analytics — but always in service of people and spiritual growth.",
+    description: "We leverage cutting-edge technology - AI, automation, and data analytics - but always in service of people and spiritual growth.",
   },
 ];
 
@@ -126,10 +126,10 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
-              Grow Ministry exists to help faith-based organizations expand their reach and deepen community engagement through modern digital tools. We believe every church and ministry deserves access to the same caliber of technology used by leading organizations — without the complexity, without the confusion, and without compromising doctrinal integrity.
+              Grow Ministry exists to help faith-based organizations expand their reach and deepen community engagement through modern digital tools. We believe every church and ministry deserves access to the same caliber of technology used by leading organizations - without the complexity, without the confusion, and without compromising doctrinal integrity.
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              As a Service-Disabled Veteran-Owned Small Business, we bring military discipline, strategic thinking, and mission-focused execution to everything we build. Our integrated ecosystem of services — CRM, social media, AI telephone, website development, travel, and branded merchandise — eliminates the need to juggle multiple vendors.
+              As a Service-Disabled Veteran-Owned Small Business, we bring military discipline, strategic thinking, and mission-focused execution to everything we build. Our integrated ecosystem of services - CRM, social media, AI telephone, website development, travel, and branded merchandise - eliminates the need to juggle multiple vendors.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-6">

@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 const locations: TravelLocation[] = [
-  // === PILGRIMAGES — Biblical & Historical Sites ===
+  // === PILGRIMAGES -- Biblical & Historical Sites ===
   {
     id: "jerusalem",
     name: "Jerusalem, Israel",
@@ -98,7 +98,7 @@ const locations: TravelLocation[] = [
     country: "Spain",
   },
 
-  // === MISSIONS — Latin America & Caribbean ===
+  // === MISSIONS -- Latin America & Caribbean ===
   {
     id: "haiti",
     name: "Port-au-Prince, Haiti",
@@ -156,7 +156,7 @@ const locations: TravelLocation[] = [
     country: "Peru",
   },
 
-  // === MISSIONS — Sub-Saharan Africa ===
+  // === MISSIONS -- Sub-Saharan Africa ===
   {
     id: "kenya",
     name: "Nairobi, Kenya",
@@ -182,7 +182,7 @@ const locations: TravelLocation[] = [
     country: "Tanzania",
   },
 
-  // === MISSIONS — South & Southeast Asia ===
+  // === MISSIONS -- South & Southeast Asia ===
   {
     id: "india",
     name: "New Delhi, India",
@@ -208,7 +208,7 @@ const locations: TravelLocation[] = [
     country: "Cambodia",
   },
 
-  // === MISSIONS — Domestic U.S. ===
+  // === MISSIONS -- Domestic U.S. ===
   {
     id: "appalachia",
     name: "Pikeville, Kentucky (Appalachia)",
@@ -487,7 +487,7 @@ export default function TravelPage() {
       <section className="py-24 px-4">
         <div className="mx-auto max-w-screen-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            {/* Left column — heading and description */}
+            {/* Left column -- heading and description */}
             <div className="lg:col-span-4 lg:sticky lg:top-28">
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
                 Why Grow Ministry
@@ -496,7 +496,7 @@ export default function TravelPage() {
                 Why Travel With Us
               </h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                We handle every detail so your group can focus on what matters most — spiritual growth, meaningful connections, and life-changing experiences. From the first call to the last day of the trip, our team is with you every step of the way.
+                We handle every detail so your group can focus on what matters most - spiritual growth, meaningful connections, and life-changing experiences. From the first call to the last day of the trip, our team is with you every step of the way.
               </p>
               <div className="mt-6 flex items-center gap-2 text-sm font-medium text-primary">
                 <CheckCircle className="size-4 text-accent" />
@@ -504,7 +504,7 @@ export default function TravelPage() {
               </div>
             </div>
 
-            {/* Right column — feature cards 2x3 grid */}
+            {/* Right column -- feature cards 2x3 grid */}
             <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {features.map((feature) => (
                 <div
@@ -565,7 +565,7 @@ export default function TravelPage() {
                 step: "03",
                 icon: Heart,
                 title: "Travel & Transform",
-                description: "Experience a journey that deepens faith, builds community, and creates lasting impact — for your group and the communities you visit.",
+                description: "Experience a journey that deepens faith, builds community, and creates lasting impact - for your group and the communities you visit.",
               },
             ].map((item) => (
               <div key={item.step} className="relative flex flex-col items-center text-center">
@@ -604,7 +604,7 @@ export default function TravelPage() {
               &ldquo;Grow Ministry made organizing our Holy Land pilgrimage completely stress-free. Every detail was handled with care, and our congregation came home transformed.&rdquo;
             </blockquote>
             <p className="mt-4 text-sm font-medium text-primary-foreground/60">
-              — Pastor Michael Thompson, Grace Community Church
+              - Pastor Michael Thompson, Grace Community Church
             </p>
           </div>
 

@@ -39,6 +39,9 @@ jobs:
       - name: Type check
         run: pnpm tsc --noEmit
 
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=critical
+
   test:
     name: Unit Tests
     runs-on: ubuntu-latest

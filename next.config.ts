@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Prevent webpack from bundling mapbox-gl — loaded from CDN instead
+      // Prevent webpack from bundling mapbox-gl -- loaded from CDN instead
       config.externals = [...(config.externals || []), { "mapbox-gl": "mapboxgl" }];
     }
     return config;

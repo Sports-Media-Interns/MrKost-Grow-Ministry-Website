@@ -7,7 +7,7 @@ interface UseFormSubmitOptions<T> {
   buildPayload: () => (T & { recaptchaToken?: string }) | Promise<T & { recaptchaToken?: string }>;
   /** Called on successful submission */
   onSuccess?: () => void;
-  /** Called on error — return true to suppress default error handling */
+  /** Called on error -- return true to suppress default error handling */
   onError?: (error: string) => boolean | void;
 }
 

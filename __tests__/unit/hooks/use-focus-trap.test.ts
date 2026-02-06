@@ -65,7 +65,7 @@ describe("useFocusTrap", () => {
     button3.focus();
     expect(document.activeElement).toBe(button3);
 
-    // Press Tab (not shift) — should wrap to first element
+    // Press Tab (not shift) -- should wrap to first element
     const prevented = fireEvent.keyDown(document, {
       key: "Tab",
       shiftKey: false,
@@ -85,7 +85,7 @@ describe("useFocusTrap", () => {
     button1.focus();
     expect(document.activeElement).toBe(button1);
 
-    // Press Shift+Tab — should wrap to last element
+    // Press Shift+Tab -- should wrap to last element
     fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
 
     expect(document.activeElement).toBe(button3);
@@ -136,7 +136,7 @@ describe("useFocusTrap", () => {
 
     renderHook(() => useFocusTrap(ref, true, onClose));
 
-    // Focus the second button (middle — not at boundary)
+    // Focus the second button (middle -- not at boundary)
     button2.focus();
     expect(document.activeElement).toBe(button2);
 

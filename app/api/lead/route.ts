@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
     const validated = validateLead(body);
 
-    // Verify reCAPTCHA token server-side (required — reject missing/empty tokens)
+    // Verify reCAPTCHA token server-side (required -- reject missing/empty tokens)
     const recaptcha = await verifyRecaptcha(validated.recaptchaToken, "lead_capture");
     if (!recaptcha.success) {
       return NextResponse.json(

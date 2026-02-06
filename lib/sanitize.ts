@@ -17,7 +17,7 @@ export function sanitizeString(input: string): string {
 
   // Decode &amp; that sanitize-html introduces from bare & in plain text
   // (CRM data like "John & Jane's Church" should stay as literal text)
-  // NOTE: Do NOT decode &lt; &gt; — those represent stripped HTML and
+  // NOTE: Do NOT decode &lt; &gt; -- those represent stripped HTML and
   // decoding them could re-introduce XSS in HTML contexts.
   return cleaned.replace(/&amp;/g, "&");
 }

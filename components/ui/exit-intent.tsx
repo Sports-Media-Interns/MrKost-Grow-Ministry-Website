@@ -128,7 +128,7 @@ export function ExitIntent() {
     sessionStorage.setItem("gm_exit_shown", "true")
   }
 
-  /* ---- close (without marking sessionStorage — can re-trigger) ---- */
+  /* ---- close (without marking sessionStorage -- can re-trigger) ---- */
   const handleClose = useCallback(() => {
     setIsOpen(false)
   }, [])
@@ -151,7 +151,7 @@ export function ExitIntent() {
       className="fixed inset-0 z-[60] flex items-center justify-center px-4 animate-[fadeIn_0.3s_ease-out] will-change-[opacity]"
       role="dialog"
       aria-modal="true"
-      aria-label="Exit intent offer"
+      aria-labelledby="exit-intent-title"
       onClick={handleBackdropClick}
     >
       <style>{`
@@ -173,7 +173,7 @@ export function ExitIntent() {
         {/* close button */}
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 flex items-center justify-center size-8 rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          className="absolute right-3 top-3 flex items-center justify-center size-11 rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
           aria-label="Close popup"
         >
           <X className="size-5" />
@@ -217,13 +217,13 @@ export function ExitIntent() {
             <Image src="/images/logo.webp" alt="Grow Ministry" width={56} height={56} className="mx-auto mb-5 rounded-full" />
 
             {/* headline */}
-            <h2 className="text-center text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground">
-              Wait &mdash; Before You Go!
+            <h2 id="exit-intent-title" className="text-center text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground">
+              Wait - Before You Go!
             </h2>
 
             {/* subtext */}
             <p className="mt-3 text-center text-sm leading-relaxed text-muted-foreground">
-              Download our free Ministry Technology Master Report &mdash; a
+              Download our free Ministry Technology Master Report - a
               comprehensive guide to digital tools for faith-based
               organizations.
             </p>

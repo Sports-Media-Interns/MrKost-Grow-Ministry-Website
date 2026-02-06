@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Globe, Phone, Users, Share2, ShoppingBag, Plane, FileText, Home, Info, HelpCircle, Mail, ScrollText, Shield } from "lucide-react";
+import { Globe, Phone, Users, Share2, ShoppingBag, Plane, FileText, Home, Info, HelpCircle, Mail, ScrollText, Shield, Briefcase, GraduationCap, Award } from "lucide-react";
 import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export const metadata: Metadata = {
@@ -82,6 +82,9 @@ const siteStructure = [
     links: [
       { icon: ShoppingBag, text: "Branded Merchandise Shop", href: "https://growministry.com/shop/", description: "Browse and order ministry merchandise", external: true },
       { icon: FileText, text: "Press / Blog", href: "https://growministry.com/blog/", description: "Latest news and articles", external: true },
+      { icon: Briefcase, text: "Careers", href: "https://my.usaev.net/v2/preview/B6tJvSKhe5A2swg3QgaL", description: "Join our team - open positions", external: true },
+      { icon: GraduationCap, text: "Internships", href: "https://my.usaev.net/v2/preview/HdNRJ2eV8bSk1sndSQup", description: "Student and early-career internship program", external: true },
+      { icon: Award, text: "Skillbridge", href: "https://my.usaev.net/v2/preview/vZvbFocFnB7w23DyleMB", description: "DoD SkillBridge program for transitioning service members", external: true },
     ],
   },
 ];

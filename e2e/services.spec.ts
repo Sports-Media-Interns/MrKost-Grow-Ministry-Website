@@ -36,7 +36,7 @@ test.describe("Services Page", () => {
     await expect(
       page.getByRole("heading", { name: /All Services at a Glance/i })
     ).toBeVisible();
-    // Each service should have a card in the grid — check for a few titles
+    // Each service should have a card in the grid -- check for a few titles
     await expect(page.getByText("AI Telephone Agent").first()).toBeAttached();
     await expect(page.getByText("Congregation Relationship Management").first()).toBeAttached();
     await expect(page.getByText("Social Media Management").first()).toBeAttached();

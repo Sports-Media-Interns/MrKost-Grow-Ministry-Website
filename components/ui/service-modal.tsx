@@ -59,7 +59,7 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
       setSubmitted(true)
     } catch (err) {
       console.error("[ServiceModal] Submission error:", err)
-      // Still show download on error — don't block the user
+      // Still show download on error -- don't block the user
       setSubmitted(true)
     } finally {
       setLoading(false)
@@ -83,7 +83,7 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
       <div ref={modalRef} className="relative bg-background rounded-2xl shadow-2xl max-w-md w-full p-8 z-10">
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition"
+          className="absolute top-3 right-3 flex items-center justify-center size-11 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition"
           aria-label="Close"
         >
           <X className="size-5" />

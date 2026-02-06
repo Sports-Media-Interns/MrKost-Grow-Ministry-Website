@@ -535,7 +535,7 @@ export function TripPlanner({ locations }: TripPlannerProps) {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Region</span>
-                <span className="font-medium">{regionDefinitions.find((r) => r.key === formData.region)?.label ?? "—"}</span>
+                <span className="font-medium">{regionDefinitions.find((r) => r.key === formData.region)?.label ?? "-"}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Destination(s)</span>

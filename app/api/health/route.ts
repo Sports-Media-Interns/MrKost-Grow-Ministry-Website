@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   // Authenticate: require bearer token if HEALTH_CHECK_TOKEN is set
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Rate limit health checks (10 per minute)
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(request);
   const { allowed } = await rateLimit(`health:${ip}`, { limit: 10, windowMs: 60_000 });
   if (!allowed) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });

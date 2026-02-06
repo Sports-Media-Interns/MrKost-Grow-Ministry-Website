@@ -144,7 +144,7 @@ export function rateLimitSync(
  * On Vercel, x-real-ip is always the true connecting client IP.
  */
 export function getClientIp(request: Request): string {
-  // x-real-ip is set by Vercel's edge network — most trustworthy
+  // x-real-ip is set by Vercel's edge network -- most trustworthy
   const realIp = request.headers.get("x-real-ip");
   if (realIp) return realIp.trim();
 

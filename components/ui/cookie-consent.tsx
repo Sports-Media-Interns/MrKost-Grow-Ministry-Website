@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
+import { usePathname } from "next/navigation"
 import { Shield, ChevronDown, ChevronUp } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { loadRecaptchaScript, getRecaptchaToken } from "@/lib/recaptcha-client"
@@ -130,7 +131,7 @@ export function CookieConsent() {
 
   const visitorRef = useRef<VisitorData | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const lastPathRef = useRef<string>("")
+  const pathname = usePathname()
 
   /* ---- initialize visitor tracking + load reCAPTCHA ---- */
   useEffect(() => {
@@ -159,29 +160,17 @@ export function CookieConsent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /* ---- page-view tracking ---- */
+  /* ---- page-view tracking (reacts to Next.js route changes) ---- */
   useEffect(() => {
-    if (!visitorRef.current) return
+    if (!visitorRef.current || !pathname) return
 
-    const checkPath = () => {
-      const currentPath = window.location.pathname
-      if (currentPath !== lastPathRef.current) {
-        lastPathRef.current = currentPath
-        if (!visitorRef.current!.pagesVisited.includes(currentPath)) {
-          visitorRef.current!.pagesVisited.push(currentPath)
-        }
-        visitorRef.current!.currentPageUrl = window.location.href
-        persistVisitorData()
-      }
+    if (!visitorRef.current.pagesVisited.includes(pathname)) {
+      visitorRef.current.pagesVisited.push(pathname)
     }
-
-    // Check on mount
-    checkPath()
-
-    // Poll for SPA route changes
-    const interval = setInterval(checkPath, 1000)
-    return () => clearInterval(interval)
-  }, [])
+    visitorRef.current.currentPageUrl = window.location.href
+    persistVisitorData()
+     
+  }, [pathname])
 
   function startTracking() {
     if (timerRef.current) return
@@ -253,7 +242,7 @@ export function CookieConsent() {
       className="fixed inset-x-0 bottom-0 z-40 animate-[slideUp_0.4s_ease-out] will-change-transform"
       role="dialog"
       aria-modal="true"
-      aria-label="Cookie consent"
+      aria-labelledby="cookie-consent-title"
     >
       <style>{`
         @keyframes slideUp {
@@ -269,7 +258,7 @@ export function CookieConsent() {
             {/* left: icon + text */}
             <div className="flex items-start gap-3 sm:items-center">
               <Image src="/images/logo.webp" alt="Grow Ministry" width={24} height={24} className="mt-0.5 shrink-0 rounded-full sm:mt-0" />
-              <p className="text-sm leading-relaxed text-primary-foreground/90">
+              <p id="cookie-consent-title" className="text-sm leading-relaxed text-primary-foreground/90">
                 We use cookies to enhance your experience and analyze site
                 traffic.{" "}
                 <Link

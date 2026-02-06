@@ -1,5 +1,5 @@
 /**
- * Lead capture business logic — separated from HTTP handling.
+ * Lead capture business logic - separated from HTTP handling.
  * Orchestrates GHL CRM creation, webhook delivery, and Supabase storage.
  */
 import { createGHLContact } from "@/lib/ghl";
@@ -64,11 +64,11 @@ export async function processLead(
     });
   }
 
-  // 2) Send to webhook (legacy backup / automation trigger)
-  await sendWebhook(validated, referer, log);
-
-  // 3) Save to Supabase (non-blocking)
-  await saveToDatabase(validated, ghlResult.contactId, referer, log);
+  // 2) Webhook + Supabase in parallel (both non-critical)
+  await Promise.allSettled([
+    sendWebhook(validated, referer, log),
+    saveToDatabase(validated, ghlResult.contactId, referer, log),
+  ]);
 
   return { contactId: ghlResult.contactId };
 }

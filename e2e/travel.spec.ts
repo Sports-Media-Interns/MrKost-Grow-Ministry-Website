@@ -53,7 +53,7 @@ test.describe("Travel Page", () => {
   test("clicking a destination tab changes displayed content", async ({ page }) => {
     await page.goto("/travel");
 
-    // Default active tab is "Holy Land & Bible Lands" — verify its summary text is shown
+    // Default active tab is "Holy Land & Bible Lands" -- verify its summary text is shown
     const holyLandSummary = page.getByText(/Walk where Jesus walked/);
     await expect(holyLandSummary).toBeVisible();
 

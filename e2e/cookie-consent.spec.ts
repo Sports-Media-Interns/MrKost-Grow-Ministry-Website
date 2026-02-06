@@ -13,7 +13,7 @@ test.describe("Cookie Consent Banner", () => {
   test("cookie banner appears on fresh visit", async ({ page }) => {
     // Reload to trigger fresh state
     await page.reload();
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
 
     // Verify key elements in the banner
@@ -26,7 +26,7 @@ test.describe("Cookie Consent Banner", () => {
 
   test("Accept All hides the banner and persists in localStorage", async ({ page }) => {
     await page.reload();
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
 
     // Click Accept All
@@ -47,14 +47,14 @@ test.describe("Cookie Consent Banner", () => {
 
   test("banner does not reappear after accepting and reloading", async ({ page }) => {
     await page.reload();
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
 
     // Accept cookies
     await page.getByRole("button", { name: "Accept All" }).click();
     await expect(banner).not.toBeVisible();
 
-    // Reload the page — banner should NOT reappear
+    // Reload the page -- banner should NOT reappear
     await page.reload();
     // Give it time to potentially appear (the component has a 300ms delay)
     await page.waitForTimeout(1000);
@@ -63,7 +63,7 @@ test.describe("Cookie Consent Banner", () => {
 
   test("Essential Only sets only essential preferences", async ({ page }) => {
     await page.reload();
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
 
     // Click Essential Only
@@ -84,7 +84,7 @@ test.describe("Cookie Consent Banner", () => {
 
   test("Customize panel opens and Save Preferences works", async ({ page }) => {
     await page.reload();
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
 
     // Click Customize to expand the panel

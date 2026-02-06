@@ -38,7 +38,8 @@ export function useFocusTrap(
         }
       }
     },
-    [ref, onClose]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onClose]
   )
 
   useEffect(() => {
@@ -55,5 +56,6 @@ export function useFocusTrap(
       document.removeEventListener("keydown", handleKeyDown)
       clearTimeout(timer)
     }
-  }, [isActive, handleKeyDown, ref])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, handleKeyDown])
 }

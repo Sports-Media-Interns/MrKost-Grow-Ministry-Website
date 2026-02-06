@@ -32,7 +32,7 @@ test.describe("Keyboard Navigation & Accessibility", () => {
     const logoLink = page.locator('nav a[href="/"]').first();
     await expect(logoLink).toBeFocused();
 
-    // Continue tabbing through nav links — they are in the desktop nav
+    // Continue tabbing through nav links -- they are in the desktop nav
     // The nav links order: Home, Services, Travel, About, Contact
     await page.keyboard.press("Tab");
     const homeLink = page.locator('nav a[href="/"]').nth(1); // second / link (the nav link "Home")
@@ -84,11 +84,11 @@ test.describe("Keyboard Navigation & Accessibility", () => {
     await page.evaluate(() => localStorage.removeItem("gm_cookie_consent"));
     await page.reload();
 
-    const banner = page.locator('[role="dialog"][aria-label="Cookie consent"]');
+    const banner = page.locator('[role="dialog"][aria-labelledby="cookie-consent-title"]');
     await expect(banner).toBeVisible({ timeout: 5000 });
     await expect(banner).toHaveAttribute("role", "dialog");
     await expect(banner).toHaveAttribute("aria-modal", "true");
-    await expect(banner).toHaveAttribute("aria-label", "Cookie consent");
+    await expect(banner).toHaveAttribute("aria-labelledby", "cookie-consent-title");
   });
 
   test("nav links have aria-current on active page", async ({ page }) => {

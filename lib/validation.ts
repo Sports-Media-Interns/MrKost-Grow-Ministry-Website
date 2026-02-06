@@ -1,6 +1,6 @@
 import { sanitizeString } from "./sanitize";
 
-/** Shared email regex — requires TLD of 2+ chars, rejects a@b.c */
+/** Shared email regex -- requires TLD of 2+ chars, rejects a@b.c */
 export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+$/;
 
 /** Validate and sanitize a name field (2–200 chars). */

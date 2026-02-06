@@ -38,7 +38,7 @@ export function validateOrigin(request: NextRequest): string | null {
     return "Forbidden referer";
   }
 
-  // No origin or referer — likely a direct API call (curl, Postman)
+  // No origin or referer -- likely a direct API call (curl, Postman)
   // Block in production since legitimate browser requests always include these
   return "Missing origin header";
 }
