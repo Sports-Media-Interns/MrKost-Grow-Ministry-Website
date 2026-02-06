@@ -20,8 +20,8 @@ Complete guide to setting up the Grow Ministry website for local development.
 
 Before you begin, ensure you have the following installed:
 
-- [ ] **Node.js** 18.17 or later — [Download](https://nodejs.org/)
-- [ ] **npm** 9+ (included with Node.js)
+- [ ] **Node.js** 20 or later — [Download](https://nodejs.org/)
+- [ ] **pnpm** 9+ — Install via `corepack enable && corepack prepare pnpm@9 --activate`
 - [ ] **Git** — [Download](https://git-scm.com/)
 - [ ] A code editor ([VS Code](https://code.visualstudio.com/) recommended)
 
@@ -44,7 +44,7 @@ cd Grow-Ministry-Website
 ### Step 2: Install Dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 This installs all production and development dependencies defined in `package.json`.
@@ -58,16 +58,16 @@ cp .env.example .env.local
 Open `.env.local` and set your values:
 
 ```env
-# GoHighLevel webhook for lead capture
-NEXT_PUBLIC_GHL_WEBHOOK_URL=https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID
+# GoHighLevel webhook for lead capture (server-side)
+GHL_WEBHOOK_URL=https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID
 ```
 
-> **Note:** The site will run without this variable, but exit-intent and cookie consent lead capture will not function.
+> **Note:** The site will run without this variable, but contact form and lead capture API routes will not forward data to GoHighLevel.
 
 ### Step 4: Start the Development Server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -78,17 +78,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start dev server with cache clear |
-| `npm run dev:fast` | Start dev server without cache clear (faster startup) |
-| `npm run build` | Create optimized production build |
-| `npm start` | Serve production build locally |
-| `npm run lint` | Run ESLint checks |
-| `npm run clean` | Delete `.next` build cache |
+| `pnpm dev` | Start dev server with cache clear |
+| `pnpm dev:fast` | Start dev server without cache clear (faster startup) |
+| `pnpm build` | Create optimized production build |
+| `pnpm start` | Serve production build locally |
+| `pnpm lint` | Run ESLint checks |
+| `pnpm clean` | Delete `.next` build cache |
 
 ### When to Use Each Dev Command
 
-- **`npm run dev`** — Use after pulling new changes, switching branches, or when you encounter stale cache issues. It clears the `.next` directory before starting.
-- **`npm run dev:fast`** — Use for regular development when you haven't changed configuration files. Skips cache clear for faster startup.
+- **`pnpm dev`** — Use after pulling new changes, switching branches, or when you encounter stale cache issues. It clears the `.next` directory before starting.
+- **`pnpm dev:fast`** — Use for regular development when you haven't changed configuration files. Skips cache clear for faster startup.
 
 ---
 
@@ -155,7 +155,7 @@ Install these extensions for the best experience:
 ### Development Mode
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Features in development mode:
@@ -168,8 +168,8 @@ Features in development mode:
 To test the production build locally:
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 This builds optimized assets and starts the production server at [http://localhost:3000](http://localhost:3000).
@@ -191,22 +191,22 @@ taskkill /PID <PID> /F
 lsof -ti:3000 | xargs kill -9
 ```
 
-Then restart with `npm run dev`.
+Then restart with `pnpm dev`.
 
 #### Stale Cache
 
 If you see outdated content or styling issues:
 
 ```bash
-npm run clean
-npm run dev
+pnpm clean
+pnpm dev
 ```
 
 #### TypeScript Errors After Dependency Update
 
 ```bash
 rm -rf node_modules package-lock.json
-npm install
+pnpm install
 ```
 
 #### Tailwind Classes Not Applying

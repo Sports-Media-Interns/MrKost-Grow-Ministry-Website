@@ -1,15 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest"
 
 /**
- * Validates that the next.config.ts security headers are properly structured.
- * We import the config and check the headers() output.
+ * Validates that the next.config.ts security headers are properly structured
+ * and that the middleware CSP is correctly configured.
  */
 describe("Security Headers (next.config.ts)", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let headers: any[]
 
   beforeAll(async () => {
-    // Dynamic import of the next config
     const config = await import("@/next.config")
     const nextConfig = config.default
     if (nextConfig.headers) {
@@ -30,7 +29,6 @@ describe("Security Headers (next.config.ts)", () => {
     expect(names).toContain("X-Frame-Options")
     expect(names).toContain("X-Content-Type-Options")
     expect(names).toContain("Strict-Transport-Security")
-    expect(names).toContain("Content-Security-Policy")
     expect(names).toContain("Referrer-Policy")
     expect(names).toContain("Permissions-Policy")
   })
@@ -53,31 +51,6 @@ describe("Security Headers (next.config.ts)", () => {
     expect(hsts.value).toContain("preload")
   })
 
-  it("CSP includes upgrade-insecure-requests", () => {
-    const global = headers.find((h) => h.source === "/(.*)")
-    const csp = global.headers.find(
-      (h: { key: string }) => h.key === "Content-Security-Policy"
-    )
-    expect(csp.value).toContain("upgrade-insecure-requests")
-  })
-
-  it("CSP includes self as default-src", () => {
-    const global = headers.find((h) => h.source === "/(.*)")
-    const csp = global.headers.find(
-      (h: { key: string }) => h.key === "Content-Security-Policy"
-    )
-    expect(csp.value).toContain("default-src 'self'")
-  })
-
-  it("CSP includes frame-src for reCAPTCHA", () => {
-    const global = headers.find((h) => h.source === "/(.*)")
-    const csp = global.headers.find(
-      (h: { key: string }) => h.key === "Content-Security-Policy"
-    )
-    expect(csp.value).toContain("frame-src")
-    expect(csp.value).toContain("www.recaptcha.net")
-  })
-
   it("caches _next/static assets as immutable", () => {
     const staticRule = headers.find((h) =>
       h.source.includes("_next/static")
@@ -97,5 +70,40 @@ describe("Security Headers (next.config.ts)", () => {
       (h: { key: string }) => h.key === "Cache-Control"
     )
     expect(cc.value).toContain("stale-while-revalidate")
+  })
+})
+
+describe("CSP Middleware", () => {
+  it("includes upgrade-insecure-requests", async () => {
+    const { middleware } = await import("@/middleware")
+    const request = new Request("https://example.com/test")
+    const response = middleware(request as never)
+    const csp = response.headers.get("Content-Security-Policy")
+    expect(csp).toContain("upgrade-insecure-requests")
+  })
+
+  it("includes self as default-src", async () => {
+    const { middleware } = await import("@/middleware")
+    const request = new Request("https://example.com/test")
+    const response = middleware(request as never)
+    const csp = response.headers.get("Content-Security-Policy")
+    expect(csp).toContain("default-src 'self'")
+  })
+
+  it("includes frame-src for reCAPTCHA", async () => {
+    const { middleware } = await import("@/middleware")
+    const request = new Request("https://example.com/test")
+    const response = middleware(request as never)
+    const csp = response.headers.get("Content-Security-Policy")
+    expect(csp).toContain("frame-src")
+    expect(csp).toContain("www.recaptcha.net")
+  })
+
+  it("includes nonce in script-src", async () => {
+    const { middleware } = await import("@/middleware")
+    const request = new Request("https://example.com/test")
+    const response = middleware(request as never)
+    const csp = response.headers.get("Content-Security-Policy")
+    expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/)
   })
 })

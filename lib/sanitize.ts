@@ -1,16 +1,25 @@
 /**
  * Sanitize a string by removing HTML tags and trimming whitespace.
- * For CRM/webhook data, we strip dangerous tags but keep normal text as-is.
- * No entity encoding since CRM stores plain text, not HTML.
+ * Uses sanitize-html for robust XSS prevention (handles nested tags,
+ * malformed HTML, and encoding tricks that regex-based approaches miss).
  */
+import sanitizeHtml from "sanitize-html";
+
 export function sanitizeString(input: string): string {
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "") // strip script tags
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "") // strip style tags
-    .replace(/<[^>]*>/g, "") // strip remaining HTML tags
-    .replace(/javascript:/gi, "") // remove javascript: URIs
-    .replace(/on\w+\s*=/gi, "") // remove event handlers
+  const cleaned = sanitizeHtml(input, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: "discard",
+  })
+    .replace(/javascript:/gi, "")
+    .replace(/on\w+\s*=/gi, "")
     .trim();
+
+  // Decode &amp; that sanitize-html introduces from bare & in plain text
+  // (CRM data like "John & Jane's Church" should stay as literal text)
+  // NOTE: Do NOT decode &lt; &gt; — those represent stripped HTML and
+  // decoding them could re-introduce XSS in HTML contexts.
+  return cleaned.replace(/&amp;/g, "&");
 }
 
 /**

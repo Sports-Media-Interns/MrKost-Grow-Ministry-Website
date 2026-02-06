@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <BreadcrumbSchema items={[{ name: "Terms of Service", url: "https://growministry.com/terms" }]} />
       <article className="py-24 px-4">
         <div className="mx-auto max-w-3xl prose prose-neutral">
@@ -119,6 +119,6 @@ export default function TermsPage() {
           </p>
         </div>
       </article>
-    </main>
+    </div>
   );
 }

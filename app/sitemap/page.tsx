@@ -88,7 +88,7 @@ const siteStructure = [
 
 export default function SitemapPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <BreadcrumbSchema items={[{ name: "Sitemap", url: "https://growministry.com/sitemap" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
@@ -149,6 +149,6 @@ export default function SitemapPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

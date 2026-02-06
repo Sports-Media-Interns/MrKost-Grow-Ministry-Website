@@ -349,7 +349,7 @@ const travelJsonLd = {
 
 export default function TravelPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(travelJsonLd) }}
@@ -661,6 +661,6 @@ export default function TravelPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

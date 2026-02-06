@@ -1,10 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import mapboxgl from "mapbox-gl"
-import "mapbox-gl/dist/mapbox-gl.css"
-
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
 
 export interface TravelLocation {
   id: string
@@ -55,9 +51,52 @@ const regionCenters: Record<string, { center: [number, number]; zoom: number }> 
   "europe": { center: [5, 45], zoom: 4 },
 }
 
+const MAPBOX_CDN = "https://api.mapbox.com/mapbox-gl-js/v3.18.1/mapbox-gl.js"
+
+/** Load mapbox-gl from CDN to bypass webpack bundling issues */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function loadMapboxGL(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    // Already loaded
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((window as any).mapboxgl) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      resolve((window as any).mapboxgl)
+      return
+    }
+    // Check if script is already loading
+    const existing = document.querySelector(`script[src="${MAPBOX_CDN}"]`) as HTMLScriptElement | null
+    if (existing) {
+      // If script already loaded, resolve immediately
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((window as any).mapboxgl) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolve((window as any).mapboxgl)
+        return
+      }
+      existing.addEventListener("load", () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolve((window as any).mapboxgl)
+      })
+      existing.addEventListener("error", () => reject(new Error("Failed to load Mapbox GL JS")))
+      return
+    }
+    const script = document.createElement("script")
+    script.src = MAPBOX_CDN
+    script.async = true
+    script.onload = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      resolve((window as any).mapboxgl)
+    }
+    script.onerror = () => reject(new Error("Failed to load Mapbox GL JS"))
+    document.head.appendChild(script)
+  })
+}
+
 export function TravelMap({ locations }: TravelMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
-  const map = useRef<mapboxgl.Map | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const map = useRef<any>(null)
 
   // Listen for region change events from DestinationTabs
   useEffect(() => {
@@ -79,157 +118,169 @@ export function TravelMap({ locations }: TravelMapProps) {
   useEffect(() => {
     if (!mapContainer.current || map.current) return
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/light-v11",
-      center: [10, 20],
-      zoom: 1.5,
-      scrollZoom: false,
-      projection: "globe",
-    })
+    let cancelled = false
 
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right")
+    async function initMap() {
+      const mapboxgl = await loadMapboxGL()
+      mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
 
-    map.current.on("style.load", () => {
-      const m = map.current
-      if (!m) return
+      if (cancelled || !mapContainer.current) return
 
-      m.setFog({
-        color: "rgb(186, 210, 235)",
-        "high-color": "rgb(36, 92, 223)",
-        "horizon-blend": 0.02,
-        "space-color": "rgb(11, 11, 25)",
-        "star-intensity": 0.6,
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/light-v11",
+        center: [10, 20],
+        zoom: 1.5,
+        scrollZoom: false,
+        projection: "globe",
       })
 
-      // Build GeoJSON from locations — rendered as native WebGL circles
-      // so dots are painted directly on the globe surface.
-      m.addSource("locations", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: locations.map((loc) => ({
-            type: "Feature" as const,
-            geometry: {
-              type: "Point" as const,
-              coordinates: [loc.coordinates[1], loc.coordinates[0]],
-            },
-            properties: {
-              id: loc.id,
-              name: loc.name,
-              description: loc.description,
-              type: loc.type,
-              country: loc.country,
-            },
-          })),
-        },
-      })
+      map.current.addControl(new mapboxgl.NavigationControl(), "top-right")
 
-      // Shadow layer for subtle depth
-      m.addLayer({
-        id: "location-dots-shadow",
-        type: "circle",
-        source: "locations",
-        paint: {
-          "circle-radius": 10,
-          "circle-color": "rgba(0,0,0,0.18)",
-          "circle-blur": 0.8,
-          "circle-translate": [0, 1],
-        },
-      })
+      map.current.on("style.load", () => {
+        const m = map.current
+        if (!m) return
 
-      // Main colored circles with white stroke
-      m.addLayer({
-        id: "location-dots",
-        type: "circle",
-        source: "locations",
-        paint: {
-          "circle-radius": 7,
-          "circle-color": [
-            "match",
-            ["get", "type"],
-            "mission", "#e74c3c",
-            "pilgrimage", "#f39c12",
-            "retreat", "#27ae60",
-            "workshop", "#3498db",
-            "#999",
-          ] as mapboxgl.ExpressionSpecification,
-          "circle-stroke-color": "#ffffff",
-          "circle-stroke-width": 2.5,
-        },
-      })
-
-      // ---- Hover tooltip ----
-      const hoverPopup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        offset: 15,
-      })
-
-      m.on("mouseenter", "location-dots", (e) => {
-        m.getCanvas().style.cursor = "pointer"
-        if (!e.features || e.features.length === 0) return
-        const feature = e.features[0]
-        const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number]
-        const name = escapeHtml(feature.properties?.name || "")
-        const type = feature.properties?.type as TravelLocation["type"]
-        const color = typeColors[type] || "#999"
-        const label = escapeHtml(typeLabels[type] || "")
-
-        hoverPopup
-          .setLngLat(coords)
-          .setHTML(
-            `<div style="font-family:system-ui,sans-serif;padding:2px 0;">` +
-            `<strong style="font-size:13px;">${name}</strong>` +
-            `<span style="display:block;font-size:11px;color:${color};margin-top:2px;">${label}</span>` +
-            `</div>`
-          )
-          .addTo(m)
-      })
-
-      m.on("mouseleave", "location-dots", () => {
-        m.getCanvas().style.cursor = ""
-        hoverPopup.remove()
-      })
-
-      // ---- Click: fly-to + detail popup ----
-      m.on("click", "location-dots", (e) => {
-        if (!e.features || e.features.length === 0) return
-        const feature = e.features[0]
-        const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number]
-        const props = feature.properties!
-        const name = escapeHtml(props.name || "")
-        const country = escapeHtml(props.country || "")
-        const description = escapeHtml(props.description || "")
-        const type = props.type as TravelLocation["type"]
-        const color = typeColors[type] || "#999"
-        const label = escapeHtml(typeLabels[type] || "")
-
-        m.flyTo({ center: coords, zoom: 5, duration: 1200 })
-
-        new mapboxgl.Popup({
-          offset: 25,
-          closeButton: true,
-          closeOnClick: true,
-          maxWidth: "300px",
-          focusAfterOpen: false,
+        m.setFog({
+          color: "rgb(186, 210, 235)",
+          "high-color": "rgb(36, 92, 223)",
+          "horizon-blend": 0.02,
+          "space-color": "rgb(11, 11, 25)",
+          "star-intensity": 0.6,
         })
-          .setLngLat(coords)
-          .setHTML(
-            `<div style="font-family:system-ui,sans-serif;padding:4px 0;">` +
-            `<h3 style="font-weight:600;font-size:15px;margin:0 0 4px 0;">${name}</h3>` +
-            `<p style="font-size:12px;color:#666;margin:0 0 6px 0;">${country}</p>` +
-            `<p style="font-size:13px;margin:0 0 10px 0;line-height:1.5;">${description}</p>` +
-            `<span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:${color}20;color:${color};font-weight:500;margin-bottom:8px;">` +
-            `${label}</span><br/>` +
-            `<a href="#trip-planner" style="display:inline-block;margin-top:6px;font-size:13px;font-weight:500;color:#161821;text-decoration:none;">` +
-            `Plan a Trip &rarr;</a></div>`
-          )
-          .addTo(m)
+
+        m.addSource("locations", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: locations.map((loc) => ({
+              type: "Feature" as const,
+              geometry: {
+                type: "Point" as const,
+                coordinates: [loc.coordinates[1], loc.coordinates[0]],
+              },
+              properties: {
+                id: loc.id,
+                name: loc.name,
+                description: loc.description,
+                type: loc.type,
+                country: loc.country,
+              },
+            })),
+          },
+        })
+
+        m.addLayer({
+          id: "location-dots-shadow",
+          type: "circle",
+          source: "locations",
+          paint: {
+            "circle-radius": 10,
+            "circle-color": "rgba(0,0,0,0.18)",
+            "circle-blur": 0.8,
+            "circle-translate": [0, 1],
+          },
+        })
+
+        m.addLayer({
+          id: "location-dots",
+          type: "circle",
+          source: "locations",
+          paint: {
+            "circle-radius": 7,
+            "circle-color": [
+              "match",
+              ["get", "type"],
+              "mission", "#e74c3c",
+              "pilgrimage", "#f39c12",
+              "retreat", "#27ae60",
+              "workshop", "#3498db",
+              "#999",
+            ],
+            "circle-stroke-color": "#ffffff",
+            "circle-stroke-width": 2.5,
+          },
+        })
+
+        // Hover tooltip
+        const hoverPopup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+          offset: 15,
+        })
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        m.on("mouseenter", "location-dots", (e: any) => {
+          m.getCanvas().style.cursor = "pointer"
+          if (!e.features || e.features.length === 0) return
+          const feature = e.features[0]
+          const coords = feature.geometry.coordinates.slice() as [number, number]
+          const name = escapeHtml(feature.properties?.name || "")
+          const type = feature.properties?.type as TravelLocation["type"]
+          const color = typeColors[type] || "#999"
+          const label = escapeHtml(typeLabels[type] || "")
+
+          hoverPopup
+            .setLngLat(coords)
+            .setHTML(
+              `<div style="font-family:system-ui,sans-serif;padding:2px 0;">` +
+              `<strong style="font-size:13px;">${name}</strong>` +
+              `<span style="display:block;font-size:11px;color:${color};margin-top:2px;">${label}</span>` +
+              `</div>`
+            )
+            .addTo(m)
+        })
+
+        m.on("mouseleave", "location-dots", () => {
+          m.getCanvas().style.cursor = ""
+          hoverPopup.remove()
+        })
+
+        // Click: fly-to + detail popup
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        m.on("click", "location-dots", (e: any) => {
+          if (!e.features || e.features.length === 0) return
+          const feature = e.features[0]
+          const coords = feature.geometry.coordinates.slice() as [number, number]
+          const props = feature.properties!
+          const name = escapeHtml(props.name || "")
+          const country = escapeHtml(props.country || "")
+          const description = escapeHtml(props.description || "")
+          const type = props.type as TravelLocation["type"]
+          const color = typeColors[type] || "#999"
+          const label = escapeHtml(typeLabels[type] || "")
+
+          m.flyTo({ center: coords, zoom: 5, duration: 1200 })
+
+          new mapboxgl.Popup({
+            offset: 25,
+            closeButton: true,
+            closeOnClick: true,
+            maxWidth: "300px",
+            focusAfterOpen: false,
+          })
+            .setLngLat(coords)
+            .setHTML(
+              `<div style="font-family:system-ui,sans-serif;padding:4px 0;">` +
+              `<h3 style="font-weight:600;font-size:15px;margin:0 0 4px 0;">${name}</h3>` +
+              `<p style="font-size:12px;color:#666;margin:0 0 6px 0;">${country}</p>` +
+              `<p style="font-size:13px;margin:0 0 10px 0;line-height:1.5;">${description}</p>` +
+              `<span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:${color}20;color:${color};font-weight:500;margin-bottom:8px;">` +
+              `${label}</span><br/>` +
+              `<a href="#trip-planner" style="display:inline-block;margin-top:6px;font-size:13px;font-weight:500;color:#161821;text-decoration:none;">` +
+              `Plan a Trip &rarr;</a></div>`
+            )
+            .addTo(m)
+        })
       })
+    }
+
+    initMap().catch((err) => {
+      console.error("[TravelMap] Failed to initialize map:", err)
     })
 
     return () => {
+      cancelled = true
       map.current?.remove()
       map.current = null
     }

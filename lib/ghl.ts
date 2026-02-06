@@ -2,6 +2,7 @@
  * GoHighLevel CRM API client.
  * Creates contacts and tags them based on form source.
  */
+import * as Sentry from "@sentry/nextjs";
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 const GHL_API_VERSION = "2021-07-28";
@@ -91,7 +92,11 @@ export async function createGHLContact(
     const data: GHLContactResponse = await response.json();
 
     if (!response.ok) {
+      const err = new Error(`GHL API error: ${response.status}`);
       console.error("[GHL] Create contact failed:", response.status, data);
+      Sentry.captureException(err, {
+        contexts: { ghl: { status: response.status, tags: params.tags, source: params.source } },
+      });
       return {
         success: false,
         error: `GHL API error: ${response.status}`,
@@ -109,9 +114,11 @@ export async function createGHLContact(
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
       console.error("[GHL] Request timed out");
+      Sentry.captureException(err, { tags: { integration: "ghl", reason: "timeout" } });
       return { success: false, error: "GHL request timed out" };
     }
     console.error("[GHL] Error creating contact:", err);
+    Sentry.captureException(err, { tags: { integration: "ghl" } });
     return { success: false, error: "GHL request failed" };
   } finally {
     clearTimeout(timeout);

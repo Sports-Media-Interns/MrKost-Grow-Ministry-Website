@@ -228,20 +228,18 @@ Pre-defined conversation tree:
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Environment variables | Partial | GHL webhook is `NEXT_PUBLIC_` (exposed to client) |
-| Input validation | Client-only | Forms validate on client, no server validation |
-| CORS | N/A | No API routes |
+| Environment variables | Server-side | Secrets use server-only env vars; public vars use `NEXT_PUBLIC_` prefix |
+| Input validation | Server + Client | Server-side validation via `lib/validation.ts`, sanitization via `sanitize-html` |
+| Rate limiting | Implemented | Upstash Redis (production) with in-memory fallback (dev), 5 req/60s per IP |
+| reCAPTCHA | Server-verified | v3 with fail-closed semantics, score threshold 0.5, action validation |
+| CSP | Nonce-based | Dynamic CSP via `middleware.ts` with per-request nonces for script-src |
+| Security headers | Comprehensive | HSTS (2yr + preload), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
 | Authentication | N/A | Public website, no user accounts |
-| Content Security | Basic | No CSP headers configured |
-| HTTPS | Enforced | Via Vercel deployment |
-| Cookie consent | Implemented | Banner with accept/decline |
-
-### Planned Improvements
-
-- Move webhook URL to server-side API route
-- Add security headers in `next.config.ts` (CSP, HSTS, X-Frame-Options)
-- Add server-side form validation
-- Make GA4 conditional on cookie consent
+| HTTPS | Enforced | Via deployment + `upgrade-insecure-requests` in CSP |
+| Cookie consent | Implemented | Banner with accept/decline/customize, GA4 conditional on consent |
+| Error monitoring | Sentry | Client + server + edge runtimes, session replay on errors, source maps uploaded |
+| API routes | Secured | `/api/contact` and `/api/lead` with rate limiting, validation, reCAPTCHA, field whitelisting |
+| Database | RLS enabled | Supabase with Row Level Security, service_role only access |
 
 ---
 

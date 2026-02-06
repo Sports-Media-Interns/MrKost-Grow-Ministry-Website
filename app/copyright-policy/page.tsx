@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function CopyrightPolicyPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <BreadcrumbSchema items={[{ name: "Copyright Policy", url: "https://growministry.com/copyright-policy" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
@@ -786,6 +786,6 @@ export default function CopyrightPolicyPage() {
           </p>
         </div>
       </article>
-    </main>
+    </div>
   );
 }

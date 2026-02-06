@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   validateName,
@@ -57,7 +58,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
     const validated = validateContact(body);
 
     // Verify reCAPTCHA token server-side (required — reject missing/empty tokens)
@@ -155,6 +164,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error("[Contact API] Error:", err);
+    Sentry.captureException(err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

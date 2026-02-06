@@ -95,7 +95,7 @@ const cookieTableData = [
 
 export default function CookiePolicyPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <BreadcrumbSchema items={[{ name: "Cookie Policy", url: "https://growministry.com/cookie-policy" }]} />
       {/* Hero */}
       <section className="relative text-primary-foreground py-16 px-4 overflow-hidden">
@@ -998,6 +998,6 @@ export default function CookiePolicyPage() {
           </p>
         </div>
       </article>
-    </main>
+    </div>
   );
 }

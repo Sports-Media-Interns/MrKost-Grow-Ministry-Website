@@ -41,7 +41,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-playfair: var(--font-playfair), serif;
 }
 
 :root {

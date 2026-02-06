@@ -6,11 +6,13 @@ import {
   getMapboxToken,
   getGA4MeasurementId,
   validateEnv,
+  _resetEnvCache,
 } from "@/lib/env";
 
 describe("env accessors", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    _resetEnvCache();
   });
 
   describe("getGhlWebhookUrl", () => {

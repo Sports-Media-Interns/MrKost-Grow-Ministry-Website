@@ -116,7 +116,7 @@ const contactJsonLd = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
@@ -168,19 +168,19 @@ export default function ContactPage() {
               Reach out directly through any of the channels below.
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {contactDetails.map(({ icon: Icon, label, value, href }) => (
                 <a
                   key={label}
                   href={href}
-                  className="flex items-start gap-4 group"
+                  className="flex items-center gap-4 group rounded-xl p-3 -ml-3 hover:bg-muted/60 transition-all duration-300"
                 >
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-muted group-hover:bg-accent/20 transition shrink-0">
-                    <Icon className="size-5 text-foreground" />
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground group-hover:bg-accent group-hover:text-accent-foreground group-hover:scale-110 transition-all duration-300 shadow-sm group-hover:shadow-md shrink-0">
+                    <Icon className="size-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{label}</p>
-                    <p className="text-sm text-muted-foreground">{value}</p>
+                    <p className="text-sm font-medium group-hover:text-foreground transition-colors duration-300">{label}</p>
+                    <p className="text-sm text-muted-foreground group-hover:text-foreground/70 transition-colors duration-300">{value}</p>
                   </div>
                 </a>
               ))}
@@ -208,6 +208,6 @@ export default function ContactPage() {
 
       {/* Booking Calendar */}
       <BookingCalendar />
-    </main>
+    </div>
   );
 }

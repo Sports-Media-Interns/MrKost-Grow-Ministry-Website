@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
@@ -15,6 +16,7 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -43,7 +45,12 @@ export function Navbar() {
               <Link
                 key={text}
                 href={href}
-                className="text-sm font-medium text-foreground/70 hover:text-foreground transition"
+                aria-current={pathname === href ? "page" : undefined}
+                className={`text-sm font-medium transition ${
+                  pathname === href
+                    ? "text-foreground"
+                    : "text-foreground/70 hover:text-foreground"
+                }`}
               >
                 {text}
               </Link>
@@ -81,7 +88,12 @@ export function Navbar() {
               <Link
                 key={text}
                 href={href}
-                className="block text-sm font-medium text-foreground/70 hover:text-foreground transition"
+                aria-current={pathname === href ? "page" : undefined}
+                className={`block text-sm font-medium transition ${
+                  pathname === href
+                    ? "text-foreground"
+                    : "text-foreground/70 hover:text-foreground"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 {text}

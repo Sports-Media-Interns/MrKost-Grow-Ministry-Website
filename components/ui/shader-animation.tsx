@@ -51,15 +51,14 @@ export function ShaderAnimation() {
     `
 
     // Initialize Three.js scene
-    const camera = new THREE.Camera()
-    camera.position.z = 1
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1)
 
     const scene = new THREE.Scene()
     const geometry = new THREE.PlaneGeometry(2, 2)
 
     const uniforms = {
-      time: { type: "f", value: 1.0 },
-      resolution: { type: "v2", value: new THREE.Vector2() },
+      time: { value: 1.0 },
+      resolution: { value: new THREE.Vector2() },
     }
 
     const material = new THREE.ShaderMaterial({
@@ -71,7 +70,13 @@ export function ShaderAnimation() {
     const mesh = new THREE.Mesh(geometry, material)
     scene.add(mesh)
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true })
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true })
+    } catch {
+      // WebGL not supported — silently fail, container keeps its black background
+      return
+    }
     renderer.setPixelRatio(window.devicePixelRatio)
 
     container.appendChild(renderer.domElement)
@@ -133,7 +138,7 @@ export function ShaderAnimation() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-screen"
+      className="absolute inset-0 w-full h-full"
       style={{
         background: "#000",
         overflow: "hidden",

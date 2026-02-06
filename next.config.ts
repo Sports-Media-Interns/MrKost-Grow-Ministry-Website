@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const isDev = process.env.NODE_ENV === "development";
-
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
@@ -10,6 +8,13 @@ const nextConfig: NextConfig = {
   ...(process.env.DOCKER_BUILD ? { output: "standalone" as const } : {}),
   images: {
     formats: ["image/avif", "image/webp"],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Prevent webpack from bundling mapbox-gl — loaded from CDN instead
+      config.externals = [...(config.externals || []), { "mapbox-gl": "mapboxgl" }];
+    }
+    return config;
   },
   async headers() {
     return [
@@ -41,23 +46,7 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://widgets.leadconnectorhq.com https://stcdn.leadconnectorhq.com`,
-              "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://stcdn.leadconnectorhq.com",
-              "img-src 'self' data: blob: https://*.mapbox.com https://www.googletagmanager.com https://images.leadconnectorhq.com https://stcdn.leadconnectorhq.com",
-              "font-src 'self' data: https://stcdn.leadconnectorhq.com",
-              "connect-src 'self' https://*.mapbox.com https://www.google-analytics.com https://www.googletagmanager.com https://services.leadconnectorhq.com https://widgets.leadconnectorhq.com https://stcdn.leadconnectorhq.com https://link.fastpaydirect.com https://www.google.com https://www.google.com/recaptcha/ https://*.sentry.io",
-              "worker-src 'self' blob:",
-              "child-src blob:",
-              "frame-src https://www.google.com https://www.recaptcha.net https://api.leadconnectorhq.com https://link.fastpaydirect.com https://widgets.leadconnectorhq.com",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "upgrade-insecure-requests",
-            ].join("; "),
-          },
+          // CSP is set dynamically in middleware.ts with nonce-based script-src
         ],
       },
       // Immutable cache for hashed Next.js build assets

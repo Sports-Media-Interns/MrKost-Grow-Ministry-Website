@@ -1,0 +1,96 @@
+name: Deploy
+
+on:
+  # Production: only after CI passes on main
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  # Preview: on PRs (gated by required CI status checks in branch protection)
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  preview:
+    name: Preview Deployment
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel (preview)
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test preview
+        run: |
+          sleep 10
+          for path in "/" "/about" "/contact" "/services" "/travel"; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "${{ steps.deploy.outputs.url }}${path}")
+            echo "GET ${path} → ${status}"
+            if [ "$status" -ne 200 ]; then
+              echo "::error::Smoke test failed for ${path} (HTTP ${status})"
+              exit 1
+            fi
+          done
+
+      - name: Comment PR with preview URL
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Preview Deployment ✅\n\nDeployed to: ${{ steps.deploy.outputs.url }}\n\nSmoke tests passed for all key pages.`
+            })
+
+  production:
+    name: Production Deployment
+    # Only deploy when CI workflow completed successfully on main
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://growministry.com
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel (production)
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

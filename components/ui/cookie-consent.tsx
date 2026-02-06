@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Shield, ChevronDown, ChevronUp } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { loadRecaptchaScript, getRecaptchaToken } from "@/lib/recaptcha-client"
+import { useFocusTrap } from "@/hooks/use-focus-trap"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -29,32 +31,6 @@ interface VisitorData {
   firstVisitTimestamp: string
   sessionCount: number
   currentPageUrl: string
-}
-
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
-
-/* ------------------------------------------------------------------ */
-/*  reCAPTCHA                                                         */
-/* ------------------------------------------------------------------ */
-
-function loadRecaptchaScript(): void {
-  if (typeof document === "undefined" || !RECAPTCHA_SITE_KEY) return
-  if (document.querySelector(`script[src*="recaptcha/api.js"]`)) return
-  const script = document.createElement("script")
-  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
-  script.async = true
-  document.head.appendChild(script)
-}
-
-async function getRecaptchaToken(action: string): Promise<string> {
-  try {
-    if (typeof window !== "undefined" && window.grecaptcha) {
-      return await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
-    }
-  } catch {
-    console.warn("[GrowMinistry] reCAPTCHA execution failed for cookie-consent")
-  }
-  return ""
 }
 
 /* ------------------------------------------------------------------ */
@@ -166,7 +142,9 @@ export function CookieConsent() {
       // Still track pages if consent was given
       visitorRef.current = buildVisitorData()
       startTracking()
-      return
+      return () => {
+        if (timerRef.current) clearInterval(timerRef.current)
+      }
     }
 
     // Small delay so the banner slides in after paint
@@ -174,7 +152,10 @@ export function CookieConsent() {
     visitorRef.current = buildVisitorData()
     startTracking()
 
-    return () => clearTimeout(t)
+    return () => {
+      clearTimeout(t)
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -259,25 +240,19 @@ export function CookieConsent() {
     accept({ analytics, marketing, functional })
   }, [accept, analytics, marketing, functional])
 
-  /* ---- keyboard: Escape to accept essential only ---- */
-  useEffect(() => {
-    if (!visible) return
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleEssentialOnly()
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [visible, handleEssentialOnly])
+  /* ---- keyboard: Escape to accept essential only + focus trap ---- */
+  const bannerRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(bannerRef, visible, handleEssentialOnly)
 
   /* ---- render ---- */
   if (!visible) return null
 
   return (
     <div
+      ref={bannerRef}
       className="fixed inset-x-0 bottom-0 z-40 animate-[slideUp_0.4s_ease-out] will-change-transform"
       role="dialog"
+      aria-modal="true"
       aria-label="Cookie consent"
     >
       <style>{`

@@ -60,7 +60,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests with coverage
-        run: pnpm vitest run --coverage --coverage.thresholds.lines=60
+        run: pnpm vitest run --coverage --coverage.thresholds.lines=70
 
   build:
     name: Build

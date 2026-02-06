@@ -15,9 +15,11 @@ Public-facing website for Grow Ministry, a veteran-owned (SDVOSB) digital agency
 - **Animations:** Framer Motion + canvas-confetti
 - **CRM:** GoHighLevel webhooks (lead capture)
 - **Analytics:** Google Analytics 4 (via env var `NEXT_PUBLIC_GA4_MEASUREMENT_ID`)
-- **Security:** reCAPTCHA v3 (server-side verification), rate limiting, input sanitization, CSP headers
-- **Testing:** Vitest + React Testing Library + jsdom
-- **CI/CD:** GitHub Actions (lint, type check, test, build)
+- **Security:** reCAPTCHA v3 (server-side verification), Upstash Redis rate limiting, sanitize-html, nonce-based CSP via middleware
+- **Monitoring:** Sentry (client + server + edge), session replay on errors
+- **Database:** Supabase (RLS enabled, service_role only)
+- **Testing:** Vitest + React Testing Library + jsdom + Playwright (E2E)
+- **CI/CD:** GitHub Actions (lint, type check, test, build, E2E, deploy)
 - **Fonts:** Inter (sans) + Playfair Display (headings), loaded via `next/font/google`
 
 ## Project Structure
@@ -50,13 +52,21 @@ components/ui/          → Reusable components
 
 hooks/                  → Custom hooks
   use-media-query.ts    → Responsive breakpoint detection
+  use-focus-trap.ts     → Focus trap for modals/dialogs (a11y)
+
+middleware.ts             → Nonce-based CSP generation per request
 
 lib/                    → Utilities
   utils.ts              → cn() — Tailwind class merge helper
-  rate-limit.ts         → In-memory rate limiter for API routes
-  sanitize.ts           → HTML/XSS sanitization for webhook payloads
-  env.ts                → Environment variable validation and accessors
+  rate-limit.ts         → Upstash Redis rate limiter with in-memory fallback
+  sanitize.ts           → sanitize-html based XSS prevention for payloads
+  env.ts                → Zod-based environment variable validation and accessors
   recaptcha.ts          → reCAPTCHA v3 server-side verification
+  recaptcha-client.ts   → Shared reCAPTCHA client-side script loader + token getter
+  social-links.ts       → Shared social media links array
+  ghl.ts                → GoHighLevel CRM API client
+  supabase.ts           → Supabase admin client
+  validation.ts         → Input validators (name, email, phone, message)
 
 docs/                   → Documentation
   API.md                → API endpoint reference
@@ -69,7 +79,8 @@ __tests__/              → Test files (Vitest)
   unit/lib/             → Utility tests
 
 .github/                → GitHub configuration
-  workflows/ci.yml      → CI pipeline (lint, type check, test, build)
+  workflows/ci.yml      → CI pipeline (lint, type check, test, build, E2E)
+  workflows/deploy.yml  → CD pipeline (Vercel preview + production)
   ISSUE_TEMPLATE/       → Bug report and feature request templates
   pull_request_template.md → PR template
 ```
@@ -88,14 +99,15 @@ __tests__/              → Test files (Vitest)
 ## Development Commands
 
 ```bash
-npm run dev          # Dev server (clears .next cache first)
-npm run dev:fast     # Dev server without cache clear
-npm run build        # Production build
-npm start            # Serve production build
-npm run lint         # ESLint
-npm run clean        # Delete .next cache
-npx vitest           # Run tests in watch mode
-npx vitest run       # Run tests once (CI)
+pnpm dev             # Dev server (clears .next cache first)
+pnpm dev:fast        # Dev server without cache clear
+pnpm build           # Production build
+pnpm start           # Serve production build
+pnpm lint            # ESLint
+pnpm clean           # Delete .next cache
+pnpm test            # Run tests once (CI)
+pnpm test:watch      # Run tests in watch mode
+pnpm test:e2e        # Run Playwright E2E tests
 ```
 
 ## Environment Variables
@@ -105,11 +117,18 @@ All secrets and API keys are stored in `.env.local` (never committed). See `.env
 | Variable | Scope | Purpose |
 |----------|-------|---------|
 | `GHL_WEBHOOK_URL` | Server | GoHighLevel webhook for API routes |
-| `NEXT_PUBLIC_GHL_WEBHOOK_URL` | Client | GoHighLevel webhook for client-side forms |
+| `GHL_API_TOKEN` | Server | GoHighLevel API bearer token |
+| `GHL_LOCATION_ID` | Server | GoHighLevel location ID |
 | `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | Client | Mapbox GL map token |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Client | reCAPTCHA v3 site key |
 | `RECAPTCHA_SECRET_KEY` | Server | reCAPTCHA v3 server verification |
 | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | Client | Google Analytics 4 ID |
+| `NEXT_PUBLIC_SUPABASE_URL` | Client | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server | Supabase service role key |
+| `UPSTASH_REDIS_REST_URL` | Server | Upstash Redis for rate limiting |
+| `UPSTASH_REDIS_REST_TOKEN` | Server | Upstash Redis auth token |
+| `NEXT_PUBLIC_SENTRY_DSN` | Client | Sentry error tracking DSN |
+| `HEALTH_CHECK_TOKEN` | Server | Bearer token for /api/health endpoint |
 
 ## Coding Standards
 
@@ -132,14 +151,15 @@ All secrets and API keys are stored in `.env.local` (never committed). See `.env
 - All user input is sanitized before webhook forwarding
 - reCAPTCHA v3 tokens are verified server-side
 - API keys and secrets are loaded from environment variables
-- CSP header configured in `next.config.ts`
+- Nonce-based CSP configured in `middleware.ts` with `strict-dynamic`
 - Lead API uses field whitelisting (no mass assignment)
 
 ### Accessibility
 - Skip-to-content link in root layout
 - `aria-expanded` on mobile menu toggle
+- `aria-current="page"` on active nav links
 - `role="log"` and `aria-live="polite"` on chatbot messages
-- `role="dialog"` and `aria-modal` on modals/popups
+- `role="dialog"` and `aria-modal` on modals/popups with focus traps
 - All interactive elements have `aria-label`
 - Form inputs have associated `<label>` elements
 
@@ -168,5 +188,6 @@ All secrets and API keys are stored in `.env.local` (never committed). See `.env
 
 - Framework: Vitest + React Testing Library + jsdom
 - Test location: `__tests__/` directory
-- Coverage target: 80% on critical paths
-- Run: `npx vitest run` (CI) or `npx vitest` (watch)
+- Coverage: `lib/`, `components/ui/`, `app/api/`, `hooks/` — 70% CI threshold
+- Run: `pnpm test` (CI) or `pnpm test:watch` (watch)
+- E2E: Playwright — `pnpm test:e2e`

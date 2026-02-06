@@ -1,31 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X, Download, Loader2 } from "lucide-react"
-
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
-
-/** Get a reCAPTCHA token if the script is available. */
-async function getRecaptchaToken(action: string): Promise<string> {
-  try {
-    if (typeof window !== "undefined" && window.grecaptcha) {
-      return await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
-    }
-  } catch {
-    console.warn("[GrowMinistry] reCAPTCHA execution failed for service-modal")
-  }
-  return ""
-}
-
-/** Ensure the reCAPTCHA script is loaded (no-op if already present). */
-function loadRecaptchaScript(): void {
-  if (typeof document === "undefined" || !RECAPTCHA_SITE_KEY) return
-  if (document.querySelector(`script[src*="recaptcha/api.js"]`)) return
-  const script = document.createElement("script")
-  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
-  script.async = true
-  document.head.appendChild(script)
-}
+import { loadRecaptchaScript, getRecaptchaToken } from "@/lib/recaptcha-client"
+import { useFocusTrap } from "@/hooks/use-focus-trap"
 
 interface ServiceModalProps {
   isOpen: boolean
@@ -43,45 +21,12 @@ export function ServiceModal({ isOpen, onClose, serviceName, downloadUrl }: Serv
 
   const modalRef = useRef<HTMLDivElement>(null)
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose()
-        return
-      }
-      // Focus trap
-      if (e.key === "Tab" && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )
-        if (focusable.length === 0) return
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
-        }
-      }
-    },
-    [onClose]
-  )
+  useFocusTrap(modalRef, isOpen, onClose)
 
   useEffect(() => {
     if (!isOpen) return
     loadRecaptchaScript()
-    document.addEventListener("keydown", handleKeyDown)
-    // Focus the modal on open
-    const timer = setTimeout(() => {
-      modalRef.current?.querySelector<HTMLElement>("input, button")?.focus()
-    }, 0)
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown)
-      clearTimeout(timer)
-    }
-  }, [isOpen, handleKeyDown])
+  }, [isOpen])
 
   if (!isOpen) return null
 

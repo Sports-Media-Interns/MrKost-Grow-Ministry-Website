@@ -134,7 +134,7 @@ const servicesJsonLd = {
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
@@ -168,6 +168,6 @@ export default function ServicesPage() {
 
       {/* Pricing */}
       <ServicesPricing />
-    </main>
+    </div>
   );
 }

@@ -12,7 +12,12 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
-      include: ["lib/**/*.ts", "components/ui/error-boundary.tsx"],
+      include: [
+        "lib/**/*.ts",
+        "components/ui/**/*.tsx",
+        "app/api/**/*.ts",
+        "hooks/**/*.ts",
+      ],
       exclude: ["node_modules/", "**/*.d.ts", "**/*.config.*"],
     },
   },

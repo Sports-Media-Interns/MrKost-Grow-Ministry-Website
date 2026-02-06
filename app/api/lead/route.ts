@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { sanitizeString } from "@/lib/sanitize";
 import {
@@ -94,7 +95,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
     const validated = validateLead(body);
 
     // Verify reCAPTCHA token server-side (required — reject missing/empty tokens)
@@ -139,7 +148,7 @@ export async function POST(request: NextRequest) {
     // 2) Also send to webhook (legacy backup / automation trigger)
     const webhookUrl = getGhlWebhookUrl();
     if (webhookUrl) {
-      const { recaptchaToken: _token, ...leadData } = validated;
+      const { recaptchaToken: _recaptchaToken, ...leadData } = validated; // eslint-disable-line @typescript-eslint/no-unused-vars
       const webhookPayload = {
         ...leadData,
         pageUrl: request.headers.get("referer") || "https://growministry.com",
@@ -202,6 +211,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error("[Lead API] Error:", err);
+    Sentry.captureException(err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
