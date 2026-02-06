@@ -136,13 +136,33 @@ export function rateLimitSync(
   return inMemoryRateLimit(key, limit, windowMs);
 }
 
-/** Extract client IP from request headers. */
+/**
+ * Extract client IP from request headers.
+ *
+ * Security: Prefer x-real-ip (set by Vercel edge, not spoofable) over
+ * x-forwarded-for (can be spoofed by clients when no trusted proxy strips it).
+ * On Vercel, x-real-ip is always the true connecting client IP.
+ */
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-
+  // x-real-ip is set by Vercel's edge network — most trustworthy
   const realIp = request.headers.get("x-real-ip");
   if (realIp) return realIp.trim();
+
+  // x-forwarded-for may contain a proxy chain; only trust when behind a known proxy
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    // Take the rightmost non-private IP (closest to the proxy), not the leftmost
+    // which can be spoofed by the client
+    const ips = forwarded.split(",").map((ip) => ip.trim());
+    // On Vercel, the last IP before Vercel's own is the client IP
+    // For single-proxy setups, first IP is usually correct
+    // We take the first IP as Vercel already strips spoofed headers
+    if (process.env.VERCEL) {
+      return ips[0];
+    }
+    // Outside Vercel, take the last IP (closest to our server, hardest to spoof)
+    return ips[ips.length - 1];
+  }
 
   return "unknown";
 }

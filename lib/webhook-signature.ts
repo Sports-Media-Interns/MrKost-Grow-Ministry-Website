@@ -27,6 +27,41 @@ export async function signPayload(payload: string): Promise<string> {
     .join("");
 }
 
+/** Maximum age (in ms) for a valid webhook timestamp. Default: 5 minutes. */
+const MAX_TIMESTAMP_AGE_MS = 5 * 60 * 1000;
+
+/**
+ * Verify that a webhook timestamp is within the acceptable window.
+ * Rejects timestamps older than MAX_TIMESTAMP_AGE_MS to prevent replay attacks.
+ */
+export function verifyWebhookTimestamp(
+  timestamp: string,
+  maxAgeMs: number = MAX_TIMESTAMP_AGE_MS
+): boolean {
+  const ts = Number(timestamp);
+  if (isNaN(ts)) return false;
+
+  const age = Math.abs(Date.now() - ts);
+  return age <= maxAgeMs;
+}
+
+/**
+ * Verify an incoming webhook signature against the expected payload.
+ * Returns true if the signature is valid and the timestamp is fresh.
+ */
+export async function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  timestamp: string,
+  maxAgeMs?: number
+): Promise<boolean> {
+  if (!WEBHOOK_SECRET || !signature || !timestamp) return false;
+  if (!verifyWebhookTimestamp(timestamp, maxAgeMs)) return false;
+
+  const expected = await signPayload(`${timestamp}.${payload}`);
+  return expected === signature;
+}
+
 /**
  * Create headers for a signed webhook request.
  * Includes X-Signature and X-Timestamp for replay protection.

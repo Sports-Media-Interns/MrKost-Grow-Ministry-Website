@@ -47,7 +47,8 @@ describe("getClientIp", () => {
     const request = new Request("http://localhost", {
       headers: { "x-forwarded-for": "1.2.3.4, 5.6.7.8" },
     });
-    expect(getClientIp(request)).toBe("1.2.3.4");
+    // Outside Vercel, takes last IP (closest to server, hardest to spoof)
+    expect(getClientIp(request)).toBe("5.6.7.8");
   });
 
   it("extracts IP from x-real-ip header", () => {
@@ -57,14 +58,15 @@ describe("getClientIp", () => {
     expect(getClientIp(request)).toBe("10.0.0.1");
   });
 
-  it("prefers x-forwarded-for over x-real-ip", () => {
+  it("prefers x-real-ip over x-forwarded-for (anti-spoofing)", () => {
     const request = new Request("http://localhost", {
       headers: {
         "x-forwarded-for": "1.2.3.4",
         "x-real-ip": "10.0.0.1",
       },
     });
-    expect(getClientIp(request)).toBe("1.2.3.4");
+    // x-real-ip is set by the proxy (e.g., Vercel) and is more trustworthy
+    expect(getClientIp(request)).toBe("10.0.0.1");
   });
 
   it("returns unknown when no header present", () => {

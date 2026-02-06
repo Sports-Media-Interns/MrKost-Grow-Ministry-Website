@@ -8,13 +8,10 @@ import {
   optionalString,
   isValidationError,
 } from "@/lib/validation";
-import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
-import { createGHLContact } from "@/lib/ghl";
-import { getSupabaseAdmin } from "@/lib/supabase";
 import { createLogger } from "@/lib/logger";
 import { validateOrigin } from "@/lib/csrf";
-import { createSignedHeaders } from "@/lib/webhook-signature";
+import { processLead } from "@/lib/services/lead-service";
 import type { LeadPayload } from "@/lib/types";
 
 /** Whitelist of extra fields allowed beyond the core fields. */
@@ -35,14 +32,6 @@ const ALLOWED_EXTRA_FIELDS = new Set([
   "tripType",
   "region",
 ]);
-
-/** Map lead type → GHL tag */
-const LEAD_TYPE_TAGS: Record<string, string> = {
-  white_paper_download: "white-paper-download",
-  trip_planner: "trip-planner",
-  exit_intent_lead: "exit-intent",
-  cookie_consent: "cookie-consent",
-};
 
 function validateLead(data: unknown): LeadPayload {
   if (!data || typeof data !== "object") {
@@ -82,6 +71,15 @@ export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") || undefined;
   const log = createLogger("lead-api", requestId);
 
+  // Content-Type validation
+  const contentType = request.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Content-Type must be application/json" },
+      { status: 415 }
+    );
+  }
+
   // CSRF: validate origin in production
   const csrfError = validateOrigin(request);
   if (csrfError) {
@@ -119,87 +117,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build tags based on lead type and source
-    const tags: string[] = [];
-    const typeTag = LEAD_TYPE_TAGS[validated.type] || validated.type.replace(/_/g, "-");
-    tags.push(typeTag);
-
-    if (validated.type === "white_paper_download" && typeof validated.serviceName === "string") {
-      tags.push(`wp-${validated.serviceName.toLowerCase().replace(/\s+/g, "-")}`);
-    }
-
-    if (validated.type === "trip_planner" && typeof validated.tripType === "string") {
-      tags.push(`trip-${validated.tripType}`);
-    }
-
-    // 1) Create contact in GHL CRM with tags
-    const ghlResult = await createGHLContact({
-      firstName: validated.name.split(/\s+/)[0],
-      name: validated.name,
-      email: validated.email,
-      phone: validated.phone,
-      companyName:
-        (typeof validated.organization === "string" ? validated.organization : undefined) ||
-        (typeof validated.churchName === "string" ? validated.churchName : undefined),
-      tags,
-      source: validated.source,
+    // Delegate business logic to service layer
+    const result = await processLead(validated, {
+      referer: request.headers.get("referer") || undefined,
+      log,
     });
 
-    if (!ghlResult.success) {
-      log.warn("GHL contact creation failed, falling back to webhook", { error: ghlResult.error });
-    }
-
-    // 2) Also send to webhook (legacy backup / automation trigger)
-    const webhookUrl = getGhlWebhookUrl();
-    if (webhookUrl) {
-      const { recaptchaToken: _recaptchaToken, ...leadData } = validated; // eslint-disable-line @typescript-eslint/no-unused-vars
-      const webhookPayload = {
-        ...leadData,
-        pageUrl: request.headers.get("referer") || "https://growministry.com",
-        timestamp: new Date().toISOString(),
-      };
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10_000);
-
-      try {
-        const payloadJson = JSON.stringify(webhookPayload);
-        const signedHeaders = await createSignedHeaders(payloadJson);
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: signedHeaders,
-          body: payloadJson,
-          signal: controller.signal,
-        });
-      } catch {
-        log.warn("Webhook delivery failed (non-critical)");
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    // 3) Save to Supabase (non-blocking — don't fail the request if DB is down)
-    const supabase = getSupabaseAdmin();
-    if (supabase) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { recaptchaToken, name, email, phone, type, source, ...extraFields } = validated;
-        await supabase.from("leads").insert({
-          type: validated.type,
-          name: validated.name,
-          email: validated.email,
-          phone: validated.phone || null,
-          source: validated.source,
-          ghl_contact_id: ghlResult.contactId || null,
-          extra: Object.keys(extraFields).length > 0 ? extraFields : null,
-          page_url: request.headers.get("referer") || null,
-        });
-      } catch {
-        log.warn("Supabase insert failed (non-critical)");
-      }
-    }
-
-    return NextResponse.json({ success: true, contactId: ghlResult.contactId });
+    return NextResponse.json({ success: true, contactId: result.contactId });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
       log.error("Request timed out");

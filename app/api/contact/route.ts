@@ -9,13 +9,10 @@ import {
   optionalString,
   isValidationError,
 } from "@/lib/validation";
-import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
-import { createGHLContact } from "@/lib/ghl";
-import { getSupabaseAdmin } from "@/lib/supabase";
 import { createLogger } from "@/lib/logger";
 import { validateOrigin } from "@/lib/csrf";
-import { createSignedHeaders } from "@/lib/webhook-signature";
+import { processContact } from "@/lib/services/contact-service";
 import type { ContactPayload } from "@/lib/types";
 
 function validateContact(data: unknown): ContactPayload {
@@ -44,6 +41,15 @@ function validateContact(data: unknown): ContactPayload {
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") || undefined;
   const log = createLogger("contact-api", requestId);
+
+  // Content-Type validation
+  const contentType = request.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Content-Type must be application/json" },
+      { status: 415 }
+    );
+  }
 
   // CSRF: validate origin in production
   const csrfError = validateOrigin(request);
@@ -82,77 +88,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1) Create contact in GHL CRM with tag
-    const ghlResult = await createGHLContact({
-      firstName: validated.name.split(/\s+/)[0],
-      name: validated.name,
-      email: validated.email,
-      phone: validated.phone,
-      companyName: validated.organization || undefined,
-      tags: ["contact-form", `service-${validated.service.toLowerCase().replace(/\s+/g, "-")}`],
-      source: "website-contact-form",
+    // Delegate business logic to service layer
+    const result = await processContact(validated, {
+      referer: request.headers.get("referer") || undefined,
+      log,
     });
 
-    if (!ghlResult.success) {
-      log.warn("GHL contact creation failed, falling back to webhook", { error: ghlResult.error });
-    }
-
-    // 2) Also send to webhook (legacy backup / automation trigger)
-    const webhookUrl = getGhlWebhookUrl();
-    if (webhookUrl) {
-      const webhookPayload = {
-        type: "contact_form",
-        name: validated.name,
-        email: validated.email,
-        phone: validated.phone,
-        organization: validated.organization,
-        service: validated.service,
-        message: validated.message,
-        source: "website-contact-form",
-        pageUrl: request.headers.get("referer") || "https://growministry.com/contact",
-        timestamp: new Date().toISOString(),
-      };
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10_000);
-
-      try {
-        const payloadJson = JSON.stringify(webhookPayload);
-        const signedHeaders = await createSignedHeaders(payloadJson);
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: signedHeaders,
-          body: payloadJson,
-          signal: controller.signal,
-        });
-      } catch {
-        log.warn("Webhook delivery failed (non-critical)");
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    // 3) Save to Supabase (non-blocking — don't fail the request if DB is down)
-    const supabase = getSupabaseAdmin();
-    if (supabase) {
-      try {
-        await supabase.from("contacts").insert({
-          name: validated.name,
-          email: validated.email,
-          phone: validated.phone,
-          organization: validated.organization || null,
-          service: validated.service,
-          message: validated.message,
-          source: "website-contact-form",
-          ghl_contact_id: ghlResult.contactId || null,
-          page_url: request.headers.get("referer") || null,
-        });
-      } catch {
-        log.warn("Supabase insert failed (non-critical)");
-      }
-    }
-
-    return NextResponse.json({ success: true, contactId: ghlResult.contactId });
+    return NextResponse.json({ success: true, contactId: result.contactId });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
       log.error("Request timed out");
