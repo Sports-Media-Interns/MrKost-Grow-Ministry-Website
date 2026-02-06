@@ -98,6 +98,10 @@ function inMemoryRateLimit(
  * Rate limiter that uses Upstash Redis in production (when configured)
  * and falls back to in-memory for local development.
  *
+ * Note: When Upstash is active, the `limit` and `windowMs` params are
+ * ignored -- Upstash uses a fixed sliding window (5 req / 60s) configured
+ * at module init. The params only apply to the in-memory fallback.
+ *
  * Environment variables required for production:
  * - UPSTASH_REDIS_REST_URL
  * - UPSTASH_REDIS_REST_TOKEN
@@ -107,6 +111,7 @@ export async function rateLimit(
   { limit = 5, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
 ): Promise<{ allowed: boolean; remaining: number }> {
   // Use Upstash in production if configured
+  // Note: Upstash uses a fixed 5/60s sliding window; per-call params are ignored
   if (useUpstash && upstashRatelimit) {
     try {
       const result = await upstashRatelimit.limit(key);

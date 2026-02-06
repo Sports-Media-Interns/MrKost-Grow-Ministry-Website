@@ -77,7 +77,10 @@ function buildVisitorData(): VisitorData {
   const stored = typeof localStorage !== "undefined"
     ? localStorage.getItem("gm_visitor_data")
     : null
-  const existing: Partial<VisitorData> = stored ? JSON.parse(stored) : {}
+  let existing: Partial<VisitorData> = {}
+  if (stored) {
+    try { existing = JSON.parse(stored) } catch { /* corrupted localStorage */ }
+  }
 
   const utm = getUtmParams()
 

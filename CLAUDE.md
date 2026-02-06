@@ -129,6 +129,7 @@ All secrets and API keys are stored in `.env.local` (never committed). See `.env
 | `UPSTASH_REDIS_REST_TOKEN` | Server | Upstash Redis auth token |
 | `NEXT_PUBLIC_SENTRY_DSN` | Client | Sentry error tracking DSN |
 | `HEALTH_CHECK_TOKEN` | Server | Bearer token for /api/health endpoint |
+| `WEBHOOK_SIGNING_SECRET` | Server | HMAC-SHA256 secret for webhook signatures |
 
 ## Coding Standards
 

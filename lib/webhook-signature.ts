@@ -3,20 +3,20 @@
  * Allows receiving systems to verify payload authenticity.
  */
 import { timingSafeEqual } from "node:crypto";
-
-const WEBHOOK_SECRET = process.env.WEBHOOK_SIGNING_SECRET || "";
+import { getWebhookSigningSecret } from "@/lib/env";
 
 /**
  * Generate an HMAC-SHA256 signature for a JSON payload.
  * Returns hex-encoded signature string.
  */
 export async function signPayload(payload: string): Promise<string> {
-  if (!WEBHOOK_SECRET) return "";
+  const secret = getWebhookSigningSecret();
+  if (!secret) return "";
 
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(WEBHOOK_SECRET),
+    encoder.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"]
@@ -56,7 +56,7 @@ export async function verifyWebhookSignature(
   timestamp: string,
   maxAgeMs?: number
 ): Promise<boolean> {
-  if (!WEBHOOK_SECRET || !signature || !timestamp) return false;
+  if (!getWebhookSigningSecret() || !signature || !timestamp) return false;
   if (!verifyWebhookTimestamp(timestamp, maxAgeMs)) return false;
 
   const expected = await signPayload(`${timestamp}.${payload}`);

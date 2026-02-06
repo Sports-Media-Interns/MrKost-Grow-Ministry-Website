@@ -8,13 +8,14 @@ vi.mock("@supabase/supabase-js", () => ({
   createClient: mockCreateClient,
 }));
 
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin, _resetSupabaseClient } from "@/lib/supabase";
 
 describe("getSupabaseAdmin", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
     mockCreateClient.mockReset();
+    _resetSupabaseClient();
   });
 
   it("returns null when URL is missing", () => {

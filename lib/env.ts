@@ -24,6 +24,7 @@ const serverSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
   SUPABASE_SERVICE_ROLE_KEY: z.string().default(""),
   HEALTH_CHECK_TOKEN: z.string().default(""),
+  WEBHOOK_SIGNING_SECRET: z.string().default(""),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
@@ -94,6 +95,11 @@ export function getGA4MeasurementId(): string {
   return getClientEnv().NEXT_PUBLIC_GA4_MEASUREMENT_ID;
 }
 
+/** Server-only: Webhook signing secret for HMAC signatures */
+export function getWebhookSigningSecret(): string {
+  return getServerEnv().WEBHOOK_SIGNING_SECRET;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Validation (call at startup)                                       */
 /* ------------------------------------------------------------------ */
@@ -113,6 +119,7 @@ export function validateEnv(): { valid: boolean; missing: string[] } {
     "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
     "NEXT_PUBLIC_RECAPTCHA_SITE_KEY",
     "NEXT_PUBLIC_GA4_MEASUREMENT_ID",
+    "WEBHOOK_SIGNING_SECRET",
   ] as const;
 
   const missing = required.filter((key) => !process.env[key]);

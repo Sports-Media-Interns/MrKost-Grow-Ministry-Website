@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { _resetEnvCache } from "@/lib/env";
 
-// Set env before importing the module (module reads it at load time)
+// Set env before importing the module
 vi.stubEnv("WEBHOOK_SIGNING_SECRET", "test-secret-key-123");
+_resetEnvCache();
 
 const {
   signPayload,

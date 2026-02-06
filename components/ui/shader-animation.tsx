@@ -94,16 +94,8 @@ export function ShaderAnimation() {
     onWindowResize()
     window.addEventListener("resize", onWindowResize, false)
 
-    // Animation loop
-    const animate = () => {
-      const animationId = requestAnimationFrame(animate)
-      uniforms.time.value += 0.05
-      renderer.render(scene, camera)
-
-      if (sceneRef.current) {
-        sceneRef.current.animationId = animationId
-      }
-    }
+    // Check prefers-reduced-motion -- render a single frame instead of animating
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     // Store scene references for cleanup
     sceneRef.current = {
@@ -114,12 +106,51 @@ export function ShaderAnimation() {
       animationId: 0,
     }
 
+    // If user prefers reduced motion, render one frame and stop
+    if (prefersReducedMotion) {
+      uniforms.time.value = 2.0
+      renderer.render(scene, camera)
+      return () => {
+        window.removeEventListener("resize", onWindowResize)
+        if (container && renderer.domElement) {
+          container.removeChild(renderer.domElement)
+        }
+        renderer.dispose()
+        geometry.dispose()
+        material.dispose()
+      }
+    }
+
+    // Track visibility to pause animation when off-screen
+    let isVisible = true
+
+    // Animation loop
+    const animate = () => {
+      const animationId = requestAnimationFrame(animate)
+      if (isVisible) {
+        uniforms.time.value += 0.05
+        renderer.render(scene, camera)
+      }
+
+      if (sceneRef.current) {
+        sceneRef.current.animationId = animationId
+      }
+    }
+
+    // Use IntersectionObserver to pause when scrolled out of viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting },
+      { threshold: 0 }
+    )
+    observer.observe(container)
+
     // Start animation
     animate()
 
     // Cleanup function
     return () => {
       window.removeEventListener("resize", onWindowResize)
+      observer.disconnect()
 
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animationId)
@@ -138,6 +169,7 @@ export function ShaderAnimation() {
   return (
     <div
       ref={containerRef}
+      aria-hidden="true"
       className="absolute inset-0 w-full h-full"
       style={{
         background: "#000",

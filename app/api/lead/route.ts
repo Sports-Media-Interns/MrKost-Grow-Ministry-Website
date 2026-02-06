@@ -7,6 +7,7 @@ import {
   validateEmail,
   optionalString,
   isValidationError,
+  ValidationError,
 } from "@/lib/validation";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createLogger } from "@/lib/logger";
@@ -35,7 +36,7 @@ const ALLOWED_EXTRA_FIELDS = new Set([
 
 function validateLead(data: unknown): LeadPayload {
   if (!data || typeof data !== "object") {
-    throw new Error("Invalid request body");
+    throw new ValidationError("Invalid request body");
   }
 
   const body = data as Record<string, unknown>;
@@ -43,11 +44,11 @@ function validateLead(data: unknown): LeadPayload {
   const type = optionalString(body.type);
   const name = validateName(body.name);
   const email = validateEmail(body.email);
-  const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+  const phone = typeof body.phone === "string" ? sanitizeString(body.phone.trim()) : "";
   const source = optionalString(body.source);
 
   if (!type) {
-    throw new Error("Lead type is required");
+    throw new ValidationError("Lead type is required");
   }
 
   const recaptchaToken =
@@ -59,8 +60,12 @@ function validateLead(data: unknown): LeadPayload {
   // Only pass through whitelisted extra fields (prevents mass assignment)
   for (const [key, value] of Object.entries(body)) {
     if (ALLOWED_EXTRA_FIELDS.has(key) && value !== undefined && value !== null) {
-      validated[key] =
-        typeof value === "string" ? sanitizeString(value) : value;
+      if (typeof value === "string") {
+        validated[key] = sanitizeString(value);
+      } else if (typeof value === "number" && Number.isFinite(value)) {
+        validated[key] = value;
+      }
+      // Skip non-string/non-number values (arrays, objects, booleans)
     }
   }
 
@@ -133,12 +138,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const message =
-      err instanceof Error ? err.message : "An unexpected error occurred";
-
-    if (isValidationError(message)) {
+    if (isValidationError(err)) {
+      const message = err instanceof Error ? err.message : String(err);
       return NextResponse.json({ error: message }, { status: 400 });
     }
+
+    const message =
+      err instanceof Error ? err.message : "An unexpected error occurred";
 
     log.error("Unhandled error", { error: message });
     Sentry.captureException(err, { tags: { requestId } });

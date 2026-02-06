@@ -302,6 +302,13 @@
     --border-color-2: hsla(320, 50%, 90%, 0.15);
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .gradient-button,
+    .gradient-button::before {
+      transition: none;
+    }
+  }
+
   .gradient-button-variant:hover {
     --pos-x: 0%;
     --pos-y: 95.51%;

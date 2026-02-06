@@ -6,6 +6,7 @@ import {
   validateMessage,
   optionalString,
   isValidationError,
+  ValidationError,
   EMAIL_REGEX,
 } from "@/lib/validation";
 
@@ -117,20 +118,22 @@ describe("optionalString", () => {
 });
 
 describe("isValidationError", () => {
-  it("detects required error", () => {
-    expect(isValidationError("Name is required")).toBe(true);
+  it("returns true for ValidationError instances", () => {
+    expect(isValidationError(new ValidationError("Name is required"))).toBe(true);
   });
 
-  it("detects Valid error", () => {
-    expect(isValidationError("Valid email address is required")).toBe(true);
+  it("returns true for ValidationError with any message", () => {
+    expect(isValidationError(new ValidationError("anything"))).toBe(true);
   });
 
-  it("detects Invalid error", () => {
-    expect(isValidationError("Invalid request body")).toBe(true);
+  it("returns false for plain Error", () => {
+    expect(isValidationError(new Error("Internal server error"))).toBe(false);
   });
 
-  it("returns false for other errors", () => {
-    expect(isValidationError("Internal server error")).toBe(false);
+  it("returns false for non-error values", () => {
+    expect(isValidationError("Name is required")).toBe(false);
+    expect(isValidationError(null)).toBe(false);
+    expect(isValidationError(undefined)).toBe(false);
   });
 });
 

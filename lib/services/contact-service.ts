@@ -109,7 +109,7 @@ async function saveToDatabase(
   if (!supabase) return;
 
   try {
-    await supabase.from("contacts").insert({
+    const { error } = await supabase.from("contacts").insert({
       name: validated.name,
       email: validated.email,
       phone: validated.phone,
@@ -120,7 +120,10 @@ async function saveToDatabase(
       ghl_contact_id: contactId || null,
       page_url: referer || null,
     });
+    if (error) {
+      log.error("Supabase insert error (non-critical)", { code: error.code, message: error.message });
+    }
   } catch {
-    log.warn("Supabase insert failed (non-critical)");
+    log.warn("Supabase network error (non-critical)");
   }
 }

@@ -8,6 +8,7 @@ import {
   validateMessage,
   optionalString,
   isValidationError,
+  ValidationError,
 } from "@/lib/validation";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createLogger } from "@/lib/logger";
@@ -17,7 +18,7 @@ import type { ContactPayload } from "@/lib/types";
 
 function validateContact(data: unknown): ContactPayload {
   if (!data || typeof data !== "object") {
-    throw new Error("Invalid request body");
+    throw new ValidationError("Invalid request body");
   }
 
   const body = data as Record<string, unknown>;
@@ -32,7 +33,7 @@ function validateContact(data: unknown): ContactPayload {
     typeof body.recaptchaToken === "string" ? body.recaptchaToken : "";
 
   if (!service) {
-    throw new Error("Service selection is required");
+    throw new ValidationError("Service selection is required");
   }
 
   return { name, email, phone, organization, service, message, recaptchaToken };
@@ -104,12 +105,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const message =
-      err instanceof Error ? err.message : "An unexpected error occurred";
-
-    if (isValidationError(message)) {
+    if (isValidationError(err)) {
+      const message = err instanceof Error ? err.message : String(err);
       return NextResponse.json({ error: message }, { status: 400 });
     }
+
+    const message =
+      err instanceof Error ? err.message : "An unexpected error occurred";
 
     log.error("Unhandled error", { error: message });
     Sentry.captureException(err, { tags: { requestId } });

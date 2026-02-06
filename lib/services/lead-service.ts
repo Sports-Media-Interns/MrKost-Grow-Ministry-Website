@@ -146,7 +146,7 @@ async function saveToDatabase(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { recaptchaToken, name, email, phone, type, source, ...extraFields } =
       validated;
-    await supabase.from("leads").insert({
+    const { error } = await supabase.from("leads").insert({
       type: validated.type,
       name: validated.name,
       email: validated.email,
@@ -156,7 +156,10 @@ async function saveToDatabase(
       extra: Object.keys(extraFields).length > 0 ? extraFields : null,
       page_url: referer || null,
     });
+    if (error) {
+      log.error("Supabase insert error (non-critical)", { code: error.code, message: error.message });
+    }
   } catch {
-    log.warn("Supabase insert failed (non-critical)");
+    log.warn("Supabase network error (non-critical)");
   }
 }

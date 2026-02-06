@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { timingSafeEqual } from "node:crypto";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   // Authenticate: require bearer token if HEALTH_CHECK_TOKEN is set
   const token = process.env.HEALTH_CHECK_TOKEN;
   if (token) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${token}`) {
+    const auth = request.headers.get("authorization") || "";
+    const expected = `Bearer ${token}`;
+    const isValid =
+      auth.length === expected.length &&
+      timingSafeEqual(Buffer.from(auth), Buffer.from(expected));
+    if (!isValid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }

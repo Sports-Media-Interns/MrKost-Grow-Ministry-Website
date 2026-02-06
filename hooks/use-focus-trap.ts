@@ -45,6 +45,9 @@ export function useFocusTrap(
   useEffect(() => {
     if (!isActive) return
 
+    // Save the previously focused element so we can restore it on close
+    const previouslyFocused = document.activeElement as HTMLElement | null
+
     document.addEventListener("keydown", handleKeyDown)
 
     // Auto-focus first interactive element on open
@@ -55,6 +58,11 @@ export function useFocusTrap(
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
       clearTimeout(timer)
+
+      // Restore focus to the element that was focused before the trap activated
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+        previouslyFocused.focus()
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, handleKeyDown])
