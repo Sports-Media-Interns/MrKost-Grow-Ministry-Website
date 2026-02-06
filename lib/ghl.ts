@@ -3,6 +3,7 @@
  * Creates contacts and tags them based on form source.
  */
 import * as Sentry from "@sentry/nextjs";
+import type { CreateContactParams, GHLContactResponse } from "@/lib/types";
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 const GHL_API_VERSION = "2021-07-28";
@@ -13,27 +14,6 @@ function getGhlToken(): string {
 
 function getLocationId(): string {
   return process.env.GHL_LOCATION_ID || "";
-}
-
-interface CreateContactParams {
-  firstName: string;
-  lastName?: string;
-  name: string;
-  email: string;
-  phone?: string;
-  companyName?: string;
-  tags: string[];
-  source: string;
-}
-
-interface GHLContactResponse {
-  contact?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  error?: string;
 }
 
 /**

@@ -13,16 +13,10 @@ import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createGHLContact } from "@/lib/ghl";
 import { getSupabaseAdmin } from "@/lib/supabase";
-
-interface ContactPayload {
-  name: string;
-  email: string;
-  phone: string;
-  organization: string;
-  service: string;
-  message: string;
-  recaptchaToken: string;
-}
+import { createLogger } from "@/lib/logger";
+import { validateOrigin } from "@/lib/csrf";
+import { createSignedHeaders } from "@/lib/webhook-signature";
+import type { ContactPayload } from "@/lib/types";
 
 function validateContact(data: unknown): ContactPayload {
   if (!data || typeof data !== "object") {
@@ -48,6 +42,16 @@ function validateContact(data: unknown): ContactPayload {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = request.headers.get("x-request-id") || undefined;
+  const log = createLogger("contact-api", requestId);
+
+  // CSRF: validate origin in production
+  const csrfError = validateOrigin(request);
+  if (csrfError) {
+    log.warn("CSRF validation failed", { reason: csrfError });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const clientIp = getClientIp(request);
     const { allowed } = await rateLimit(`contact:${clientIp}`, { limit: 5, windowMs: 60_000 });
@@ -90,7 +94,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!ghlResult.success) {
-      console.warn("[Contact API] GHL contact creation failed, falling back to webhook:", ghlResult.error);
+      log.warn("GHL contact creation failed, falling back to webhook", { error: ghlResult.error });
     }
 
     // 2) Also send to webhook (legacy backup / automation trigger)
@@ -113,14 +117,16 @@ export async function POST(request: NextRequest) {
       const timeout = setTimeout(() => controller.abort(), 10_000);
 
       try {
+        const payloadJson = JSON.stringify(webhookPayload);
+        const signedHeaders = await createSignedHeaders(payloadJson);
         await fetch(webhookUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(webhookPayload),
+          headers: signedHeaders,
+          body: payloadJson,
           signal: controller.signal,
         });
       } catch {
-        console.warn("[Contact API] Webhook delivery failed (non-critical)");
+        log.warn("Webhook delivery failed (non-critical)");
       } finally {
         clearTimeout(timeout);
       }
@@ -142,14 +148,14 @@ export async function POST(request: NextRequest) {
           page_url: request.headers.get("referer") || null,
         });
       } catch {
-        console.warn("[Contact API] Supabase insert failed (non-critical)");
+        log.warn("Supabase insert failed (non-critical)");
       }
     }
 
     return NextResponse.json({ success: true, contactId: ghlResult.contactId });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      console.error("[Contact API] Request timed out");
+      log.error("Request timed out");
       return NextResponse.json(
         { error: "Request timed out. Please try again." },
         { status: 504 }
@@ -163,8 +169,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    console.error("[Contact API] Error:", err);
-    Sentry.captureException(err);
+    log.error("Unhandled error", { error: message });
+    Sentry.captureException(err, { tags: { requestId } });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -12,6 +12,10 @@ import { getGhlWebhookUrl } from "@/lib/env";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { createGHLContact } from "@/lib/ghl";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { createLogger } from "@/lib/logger";
+import { validateOrigin } from "@/lib/csrf";
+import { createSignedHeaders } from "@/lib/webhook-signature";
+import type { LeadPayload } from "@/lib/types";
 
 /** Whitelist of extra fields allowed beyond the core fields. */
 const ALLOWED_EXTRA_FIELDS = new Set([
@@ -39,16 +43,6 @@ const LEAD_TYPE_TAGS: Record<string, string> = {
   exit_intent_lead: "exit-intent",
   cookie_consent: "cookie-consent",
 };
-
-interface LeadPayload {
-  type: string;
-  name: string;
-  email: string;
-  phone?: string;
-  source: string;
-  recaptchaToken: string;
-  [key: string]: unknown;
-}
 
 function validateLead(data: unknown): LeadPayload {
   if (!data || typeof data !== "object") {
@@ -85,6 +79,16 @@ function validateLead(data: unknown): LeadPayload {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = request.headers.get("x-request-id") || undefined;
+  const log = createLogger("lead-api", requestId);
+
+  // CSRF: validate origin in production
+  const csrfError = validateOrigin(request);
+  if (csrfError) {
+    log.warn("CSRF validation failed", { reason: csrfError });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const clientIp = getClientIp(request);
     const { allowed } = await rateLimit(`lead:${clientIp}`, { limit: 5, windowMs: 60_000 });
@@ -142,7 +146,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!ghlResult.success) {
-      console.warn("[Lead API] GHL contact creation failed, falling back to webhook:", ghlResult.error);
+      log.warn("GHL contact creation failed, falling back to webhook", { error: ghlResult.error });
     }
 
     // 2) Also send to webhook (legacy backup / automation trigger)
@@ -159,14 +163,16 @@ export async function POST(request: NextRequest) {
       const timeout = setTimeout(() => controller.abort(), 10_000);
 
       try {
+        const payloadJson = JSON.stringify(webhookPayload);
+        const signedHeaders = await createSignedHeaders(payloadJson);
         await fetch(webhookUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(webhookPayload),
+          headers: signedHeaders,
+          body: payloadJson,
           signal: controller.signal,
         });
       } catch {
-        console.warn("[Lead API] Webhook delivery failed (non-critical)");
+        log.warn("Webhook delivery failed (non-critical)");
       } finally {
         clearTimeout(timeout);
       }
@@ -189,14 +195,14 @@ export async function POST(request: NextRequest) {
           page_url: request.headers.get("referer") || null,
         });
       } catch {
-        console.warn("[Lead API] Supabase insert failed (non-critical)");
+        log.warn("Supabase insert failed (non-critical)");
       }
     }
 
     return NextResponse.json({ success: true, contactId: ghlResult.contactId });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      console.error("[Lead API] Request timed out");
+      log.error("Request timed out");
       return NextResponse.json(
         { error: "Request timed out. Please try again." },
         { status: 504 }
@@ -210,8 +216,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    console.error("[Lead API] Error:", err);
-    Sentry.captureException(err);
+    log.error("Unhandled error", { error: message });
+    Sentry.captureException(err, { tags: { requestId } });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

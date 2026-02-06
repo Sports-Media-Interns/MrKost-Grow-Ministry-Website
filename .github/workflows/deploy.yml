@@ -89,8 +89,45 @@ jobs:
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
+      - name: Save current production URL for rollback
+        id: pre_deploy
+        run: |
+          current=$(vercel ls --token=${{ secrets.VERCEL_TOKEN }} --prod 2>/dev/null | grep "https://" | head -1 | awk '{print $2}' || echo "")
+          echo "previous_url=$current" >> "$GITHUB_OUTPUT"
+
       - name: Build project
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel (production)
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test production
+        id: smoke
+        continue-on-error: true
+        run: |
+          sleep 15
+          FAILED=0
+          for path in "/" "/about" "/contact" "/services" "/travel"; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://growministry.com${path}")
+            echo "GET ${path} → ${status}"
+            if [ "$status" -ne 200 ]; then
+              echo "::error::Production smoke test failed for ${path} (HTTP ${status})"
+              FAILED=1
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then exit 1; fi
+
+      - name: Rollback on smoke test failure
+        if: steps.smoke.outcome == 'failure' && steps.pre_deploy.outputs.previous_url != ''
+        run: |
+          echo "::warning::Smoke tests failed — rolling back to previous deployment"
+          vercel promote ${{ steps.pre_deploy.outputs.previous_url }} --token=${{ secrets.VERCEL_TOKEN }} --yes || true
+          echo "::error::Production deployment rolled back due to smoke test failure"
+          exit 1
+
+      - name: Deployment successful
+        if: steps.smoke.outcome == 'success'
+        run: echo "Production deployment verified — all smoke tests passed"

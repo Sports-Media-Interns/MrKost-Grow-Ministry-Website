@@ -4,6 +4,7 @@ import { useState } from "react"
 import Script from "next/script"
 import { Loader2, CheckCircle2 } from "lucide-react"
 import { GradientButton } from "@/components/ui/gradient-button"
+import { useFormSubmit } from "@/hooks/use-form-submit"
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
 
@@ -34,51 +35,29 @@ export function ContactForm() {
   const [organization, setOrganization] = useState("")
   const [service, setService] = useState("")
   const [message, setMessage] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState("")
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-
-    try {
+  const { loading, error, submitted, handleSubmit, reset } = useFormSubmit({
+    endpoint: "/api/contact",
+    buildPayload: async () => {
       let recaptchaToken = ""
       if (recaptchaLoaded && window.grecaptcha) {
         recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
           action: "contact_form",
         })
       }
+      return { name, email, phone, organization, service, message, recaptchaToken }
+    },
+  })
 
-      const formData = {
-        name,
-        email,
-        phone,
-        organization,
-        service,
-        message,
-        recaptchaToken,
-      }
-
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || "Submission failed")
-      }
-
-      setSubmitted(true)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+  const handleReset = () => {
+    reset()
+    setName("")
+    setEmail("")
+    setPhone("")
+    setOrganization("")
+    setService("")
+    setMessage("")
   }
 
   if (submitted) {
@@ -92,15 +71,7 @@ export function ContactForm() {
           Thank you, {name.split(" ")[0]}. We&apos;ll be in touch within one business day.
         </p>
         <button
-          onClick={() => {
-            setSubmitted(false)
-            setName("")
-            setEmail("")
-            setPhone("")
-            setOrganization("")
-            setService("")
-            setMessage("")
-          }}
+          onClick={handleReset}
           className="mt-6 text-sm font-medium text-primary hover:text-accent transition"
         >
           Send another message

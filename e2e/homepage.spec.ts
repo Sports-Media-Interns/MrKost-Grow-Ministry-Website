@@ -1,22 +1,28 @@
 import { test, expect } from "@playwright/test";
+import { HomePage } from "./pages";
 
 test.describe("Homepage", () => {
-  test("loads and displays hero section", async ({ page }) => {
-    await page.goto("/");
-    await expect(page).toHaveTitle(/Grow Ministry/);
+  let homePage: HomePage;
+
+  test.beforeEach(async ({ page }) => {
+    homePage = new HomePage(page);
+    await homePage.goto();
+  });
+
+  test("loads and displays hero section", async () => {
+    await expect(homePage.page).toHaveTitle(/Grow Ministry/);
     // Main content area should be visible
-    await expect(page.locator("#main-content")).toBeVisible();
+    await expect(homePage.mainContent).toBeVisible();
   });
 
-  test("has correct meta description", async ({ page }) => {
-    await page.goto("/");
-    const description = page.locator('meta[name="description"]');
-    await expect(description).toHaveAttribute("content", /AI-powered/);
+  test("has correct meta description", async () => {
+    await expect(homePage.metaDescription).toHaveAttribute(
+      "content",
+      /AI-powered/
+    );
   });
 
-  test("skip to content link works", async ({ page }) => {
-    await page.goto("/");
-    const skipLink = page.locator('a[href="#main-content"]');
-    await expect(skipLink).toBeAttached();
+  test("skip to content link works", async () => {
+    await expect(homePage.skipLink).toBeAttached();
   });
 });

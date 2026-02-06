@@ -5,6 +5,9 @@ export function middleware(request: NextRequest) {
   // Generate a unique nonce for each request
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
+  // Generate a correlation ID for request tracing
+  const requestId = crypto.randomUUID().slice(0, 8);
+
   const isDev = process.env.NODE_ENV === "development";
 
   // Sentry CSP report URI (project-specific ingest)
@@ -37,16 +40,18 @@ export function middleware(request: NextRequest) {
 
   const csp = directives.join("; ");
 
-  // Set the nonce in a request header so layout.tsx can read it
+  // Set the nonce and request ID in headers for downstream use
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("x-request-id", requestId);
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
 
-  // Set CSP header on the response
+  // Set CSP and request ID headers on the response
   response.headers.set("Content-Security-Policy", csp);
+  response.headers.set("X-Request-Id", requestId);
 
   return response;
 }

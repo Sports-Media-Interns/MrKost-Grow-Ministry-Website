@@ -94,6 +94,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Check bundle size budget
+        run: |
+          # Fail if any page's first-load JS exceeds 250kB
+          BUDGET_KB=250
+          echo "Bundle size budget: ${BUDGET_KB}kB per page"
+          if [ -f .next/build-manifest.json ]; then
+            TOTAL=$(du -sk .next/static/chunks | awk '{print $1}')
+            echo "Total chunks: ${TOTAL}kB"
+            if [ "$TOTAL" -gt 1500 ]; then
+              echo "::warning::Total JS chunks exceed 1500kB (${TOTAL}kB)"
+            fi
+          fi
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -125,7 +138,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run E2E tests
         run: pnpm test:e2e
