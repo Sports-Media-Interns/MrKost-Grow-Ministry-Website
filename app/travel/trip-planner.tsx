@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Globe, BookOpen, Heart, Users, ChevronRight, ChevronLeft, Check, MapPin } from "lucide-react"
 import { GradientButton } from "@/components/ui/gradient-button"
 import { loadRecaptchaScript, getRecaptchaToken } from "@/lib/recaptcha-client"
-import type { TravelLocation } from "@/components/ui/travel-map"
+import type { TravelLocation } from "@/components/ui/travel-map-wrapper"
 
 interface TripPlannerProps {
   locations: TravelLocation[]

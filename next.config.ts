@@ -15,10 +15,13 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   webpack: (config) => {
-    // Skip parsing mapbox-gl (loaded via CDN, not webpack). Without noParse,
-    // Sentry's withSentryConfig wrapper corrupts webpack chunk module
-    // resolution for mapbox-gl. Three.js must NOT be in noParse since
-    // shader-animation.tsx uses dynamic import("three") which webpack must transform.
+    // Mapbox GL is loaded via CDN (window.mapboxgl), not webpack.
+    // 1) noParse prevents webpack from parsing the npm package internals
+    // 2) externals tells webpack to resolve any import("mapbox-gl") to window.mapboxgl
+    // Both are needed to fully exclude mapbox-gl from the webpack bundle and
+    // prevent Sentry's withSentryConfig wrapper from corrupting chunks.
+    // Three.js must NOT be in noParse — shader-animation.tsx uses dynamic
+    // import("three") which webpack must transform for tree-shaking.
     config.module = config.module || {};
     const existing = config.module.noParse;
     const noParsePatterns = [/mapbox-gl/];
@@ -33,6 +36,16 @@ const nextConfig: NextConfig = {
     } else {
       config.module.noParse = noParsePatterns;
     }
+
+    // Externalize mapbox-gl so any accidental import resolves to the CDN global
+    const existingExternals = config.externals || [];
+    config.externals = [
+      ...(Array.isArray(existingExternals)
+        ? existingExternals
+        : [existingExternals]),
+      { "mapbox-gl": "mapboxgl" },
+    ];
+
     return config;
   },
   async headers() {

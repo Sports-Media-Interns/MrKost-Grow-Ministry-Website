@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Calendar, Users, Heart, Globe, Shield, BookOpen, Plane, ArrowRight, Quote, CheckCircle, Phone } from "lucide-react";
-import type { TravelLocation } from "@/components/ui/travel-map";
+import type { TravelLocation } from "@/components/ui/travel-map-wrapper";
 import { TravelMapWrapper } from "@/components/ui/travel-map-wrapper";
 import { TripPlanner } from "./trip-planner";
 import { DestinationTabs } from "./destination-tabs";

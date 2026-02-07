@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import Link from "next/link"
 import { Globe, BookOpen, Heart, Users, Mountain, Church, Building2, MapPin } from "lucide-react"
-import type { TravelLocation } from "@/components/ui/travel-map"
+import type { TravelLocation } from "@/components/ui/travel-map-wrapper"
 
 interface DestinationTabsProps {
   locations: TravelLocation[]

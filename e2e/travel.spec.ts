@@ -1,6 +1,15 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Travel Page", () => {
+  test("has no JavaScript errors on page load", async ({ page }) => {
+    const jsErrors: string[] = [];
+    page.on("pageerror", (err) => jsErrors.push(err.message));
+    await page.goto("/travel");
+    // Wait for async scripts (Mapbox CDN, analytics) to execute
+    await page.waitForTimeout(3000);
+    expect(jsErrors).toHaveLength(0);
+  });
+
   test("loads and displays hero section with correct title", async ({ page }) => {
     await page.goto("/travel");
     await expect(page).toHaveTitle(/Travel/);
