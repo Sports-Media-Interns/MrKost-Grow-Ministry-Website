@@ -1,10 +1,6 @@
-[project]
-id = "grow-ministry"
-name = "Grow Ministry Website"
-
 [db]
 port = 54322
-major_version = 15
+major_version = 17
 
 [api]
 enabled = true
