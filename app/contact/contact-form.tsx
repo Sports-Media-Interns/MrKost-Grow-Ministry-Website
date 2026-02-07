@@ -28,7 +28,7 @@ const serviceOptions = [
   "General Inquiry",
 ]
 
-export function ContactForm() {
+export function ContactForm({ nonce }: { nonce?: string }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
@@ -85,6 +85,7 @@ export function ContactForm() {
       <Script
         src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
         onLoad={() => setRecaptchaLoaded(true)}
+        nonce={nonce}
       />
 
       <form onSubmit={handleSubmit} className="space-y-5">

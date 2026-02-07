@@ -17,7 +17,7 @@ interface CookiePreferences {
  * Google Analytics component that respects cookie consent.
  * Only loads GA4 when user has explicitly opted in to analytics cookies.
  */
-export function GoogleAnalytics() {
+export function GoogleAnalytics({ nonce }: { nonce?: string }) {
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
   useEffect(() => {
@@ -70,8 +70,9 @@ export function GoogleAnalytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
         strategy="afterInteractive"
         crossOrigin="anonymous"
+        nonce={nonce}
       />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="google-analytics" strategy="afterInteractive" nonce={nonce}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

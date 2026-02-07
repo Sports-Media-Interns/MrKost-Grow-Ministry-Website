@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import { ContactForm } from "./contact-form";
 import { BookingCalendar } from "./booking-calendar";
@@ -114,7 +115,9 @@ const contactJsonLd = {
   },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <div className="min-h-screen flex flex-col pt-16">
       <script
@@ -156,7 +159,7 @@ export default function ContactPage() {
             <p className="text-muted-foreground mb-8">
               Fill out the form below and we&apos;ll get back to you within one business day.
             </p>
-            <ContactForm />
+            <ContactForm nonce={nonce} />
           </div>
 
           {/* Contact Info */}
@@ -207,7 +210,7 @@ export default function ContactPage() {
       </section>
 
       {/* Booking Calendar */}
-      <BookingCalendar />
+      <BookingCalendar nonce={nonce} />
     </div>
   );
 }

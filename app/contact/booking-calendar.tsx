@@ -3,7 +3,7 @@
 import Script from "next/script"
 import { CalendarDays } from "lucide-react"
 
-export function BookingCalendar() {
+export function BookingCalendar({ nonce }: { nonce?: string }) {
   return (
     <section className="py-24 px-4 bg-muted">
       <div className="mx-auto max-w-screen-xl">
@@ -32,6 +32,7 @@ export function BookingCalendar() {
         <Script
           src="https://link.msgsndr.com/js/form_embed.js"
           strategy="lazyOnload"
+          nonce={nonce}
         />
       </div>
     </section>
