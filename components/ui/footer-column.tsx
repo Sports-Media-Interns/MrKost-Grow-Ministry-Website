@@ -111,7 +111,7 @@ export default function Footer4Col() {
           {/* Link Columns */}
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Services</p>
+              <h3 className="text-lg font-medium">Services</h3>
               <ul className="mt-8 space-y-4 text-sm">
                 {serviceLinks.map(({ text, href, external }) => (
                   <li key={text}>
@@ -138,7 +138,7 @@ export default function Footer4Col() {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Company</p>
+              <h3 className="text-lg font-medium">Company</h3>
               <ul className="mt-8 space-y-4 text-sm">
                 {aboutLinks.map(({ text, href, external }) => (
                   <li key={text}>
@@ -165,7 +165,7 @@ export default function Footer4Col() {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Legal</p>
+              <h3 className="text-lg font-medium">Legal</h3>
               <ul className="mt-8 space-y-4 text-sm">
                 {legalLinks.map(({ text, href, external }) => (
                   <li key={text}>
@@ -192,7 +192,7 @@ export default function Footer4Col() {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Contact Us</p>
+              <h3 className="text-lg font-medium">Contact Us</h3>
               <ul className="mt-8 space-y-4 text-sm">
                 {contactInfo.map(({ icon: Icon, text, href, isAddress }) => (
                   <li key={text}>

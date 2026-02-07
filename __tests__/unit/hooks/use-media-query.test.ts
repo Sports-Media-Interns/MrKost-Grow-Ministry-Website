@@ -3,16 +3,18 @@ import { renderHook, act } from "@testing-library/react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 describe("useMediaQuery", () => {
-  let listeners: Map<string, (e: MediaQueryListEvent) => void>;
+  let listeners: Map<string, () => void>;
+  let matchesState: Map<string, boolean>;
 
   beforeEach(() => {
     listeners = new Map();
+    matchesState = new Map();
     vi.stubGlobal("matchMedia", (query: string) => ({
-      matches: false,
+      get matches() { return matchesState.get(query) ?? false; },
       media: query,
       onchange: null,
-      addEventListener: (event: string, handler: (e: MediaQueryListEvent) => void) => {
-        if (event === "change") listeners.set(query, handler);
+      addEventListener: (_event: string, handler: () => void) => {
+        listeners.set(query, handler);
       },
       removeEventListener: () => {
         listeners.delete(query);
@@ -32,10 +34,12 @@ describe("useMediaQuery", () => {
     const { result } = renderHook(() => useMediaQuery("(min-width: 768px)"));
     expect(result.current).toBe(false);
 
+    // Simulate the media query matching
+    matchesState.set("(min-width: 768px)", true);
     const listener = listeners.get("(min-width: 768px)");
     if (listener) {
       act(() => {
-        listener({ matches: true } as MediaQueryListEvent);
+        listener();
       });
     }
     expect(result.current).toBe(true);

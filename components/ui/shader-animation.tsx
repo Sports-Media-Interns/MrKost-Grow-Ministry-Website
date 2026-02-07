@@ -77,7 +77,7 @@ export function ShaderAnimation() {
       // WebGL not supported -- silently fail, container keeps its black background
       return
     }
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     container.appendChild(renderer.domElement)
 

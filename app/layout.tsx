@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import dynamic from "next/dynamic";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
 import Footer4Col from "@/components/ui/footer-column";
-import { CookieConsent } from "@/components/ui/cookie-consent";
-import { ExitIntent } from "@/components/ui/exit-intent";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import "./globals.css";
+
+// Lazy-load non-critical overlays into separate chunks to reduce initial JS bundle
+const CookieConsent = dynamic(
+  () => import("@/components/ui/cookie-consent").then((mod) => mod.CookieConsent)
+);
+const ExitIntent = dynamic(
+  () => import("@/components/ui/exit-intent").then((mod) => mod.ExitIntent)
+);
 
 const inter = Inter({
   subsets: ["latin"],
@@ -77,6 +84,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://widgets.leadconnectorhq.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://api.mapbox.com" />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         {/* Skip to main content -- accessibility */}

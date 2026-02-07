@@ -31,6 +31,7 @@ vi.mock("framer-motion", () => ({
       className?: string;
     }) => <div className={className}>{children}</div>,
   },
+  useReducedMotion: () => false,
 }));
 
 // Mock canvas-confetti

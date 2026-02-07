@@ -3,18 +3,11 @@
  * Creates contacts and tags them based on form source.
  */
 import * as Sentry from "@sentry/nextjs";
+import { getGhlApiToken, getGhlLocationId } from "@/lib/env";
 import type { CreateContactParams, GHLContactResponse } from "@/lib/types";
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 const GHL_API_VERSION = "2021-07-28";
-
-function getGhlToken(): string {
-  return process.env.GHL_API_TOKEN || "";
-}
-
-function getLocationId(): string {
-  return process.env.GHL_LOCATION_ID || "";
-}
 
 /**
  * Create (or upsert) a contact in GoHighLevel CRM.
@@ -23,8 +16,8 @@ function getLocationId(): string {
 export async function createGHLContact(
   params: CreateContactParams
 ): Promise<{ success: boolean; contactId?: string; error?: string }> {
-  const token = getGhlToken();
-  const locationId = getLocationId();
+  const token = getGhlApiToken();
+  const locationId = getGhlLocationId();
 
   if (!token || !locationId) {
     console.error("[GHL] API token or Location ID not configured");

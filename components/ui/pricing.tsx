@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { Check, Star } from "lucide-react"
 import Link from "next/link"
 import { useState, useRef } from "react"
@@ -38,6 +38,7 @@ export function Pricing({
 }: PricingProps) {
   const [isMonthly, setIsMonthly] = useState(true)
   const isDesktop = useMediaQuery("(min-width: 768px)")
+  const prefersReducedMotion = useReducedMotion()
   const switchRef = useRef<HTMLButtonElement>(null)
 
   const handleToggle = (checked: boolean) => {
@@ -98,26 +99,32 @@ export function Pricing({
         {plans.map((plan, index) => (
           <motion.div
             key={index}
-            initial={{ y: 50, opacity: 1 }}
+            initial={prefersReducedMotion ? false : { y: 50, opacity: 1 }}
             whileInView={
-              isDesktop
-                ? {
-                    y: plan.isPopular ? -20 : 0,
-                    opacity: 1,
-                    x: index === 2 ? -30 : index === 0 ? 30 : 0,
-                    scale: index === 0 || index === 2 ? 0.94 : 1.0,
-                  }
-                : {}
+              prefersReducedMotion
+                ? {}
+                : isDesktop
+                  ? {
+                      y: plan.isPopular ? -20 : 0,
+                      opacity: 1,
+                      x: index === 2 ? -30 : index === 0 ? 30 : 0,
+                      scale: index === 0 || index === 2 ? 0.94 : 1.0,
+                    }
+                  : {}
             }
             viewport={{ once: true }}
-            transition={{
-              duration: 1.6,
-              type: "spring",
-              stiffness: 100,
-              damping: 30,
-              delay: 0.4,
-              opacity: { duration: 0.5 },
-            }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : {
+                    duration: 1.6,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 30,
+                    delay: 0.4,
+                    opacity: { duration: 0.5 },
+                  }
+            }
             className={cn(
               "rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative",
               plan.isPopular ? "border-primary border-2" : "border-border",

@@ -177,10 +177,16 @@ export function CookieConsent() {
 
   function startTracking() {
     if (timerRef.current) return
+    // Track time every second but only persist to localStorage every 30 seconds
+    let tickCount = 0
     timerRef.current = setInterval(() => {
       if (visitorRef.current) {
         visitorRef.current.timeOnSite += 1
-        persistVisitorData()
+        tickCount++
+        if (tickCount >= 30) {
+          persistVisitorData()
+          tickCount = 0
+        }
       }
     }, 1000)
   }

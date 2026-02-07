@@ -185,9 +185,14 @@ Enable in Vercel Dashboard → Project → Analytics for:
 
 ### Error Monitoring
 
-Currently no error monitoring service is configured. Recommended additions:
-- [Sentry](https://sentry.io/) for runtime error tracking
-- Vercel's built-in error logs in the Functions tab
+Sentry is configured for comprehensive error monitoring:
+- **Client**: `sentry.client.config.ts` with PII redaction, session replay, and DOM breadcrumb sanitization
+- **Server**: `sentry.server.config.ts` with PII redaction for exception values and breadcrumbs
+- **Edge**: `sentry.edge.config.ts` with PII redaction for middleware errors
+- CSP violation reports are sent to Sentry in production via `report-uri` directive
+- Source maps are uploaded during build and deleted afterward to prevent exposure
+- Sentry is integrated into API error handlers and ErrorBoundary components
+- Additionally, Vercel's built-in error logs are available in the Functions tab
 
 ---
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -17,6 +17,62 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const menuRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+
+  const closeMenu = useCallback(() => setIsOpen(false), [])
+
+  // Body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => { document.body.style.overflow = "" }
+  }, [isOpen])
+
+  // Focus trap + Escape to close for mobile menu
+  useEffect(() => {
+    if (!isOpen || !menuRef.current) return
+
+    const menu = menuRef.current
+    const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        closeMenu()
+        toggleRef.current?.focus()
+        return
+      }
+      if (e.key !== "Tab") return
+
+      const focusable = menu.querySelectorAll<HTMLElement>(focusableSelector)
+      if (focusable.length === 0) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    // Focus first link in menu
+    const firstLink = menu.querySelector<HTMLElement>(focusableSelector)
+    firstLink?.focus()
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen, closeMenu])
 
   return (
     <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -69,6 +125,7 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
+            ref={toggleRef}
             className="md:hidden flex items-center justify-center size-11 rounded-lg text-foreground"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
@@ -82,7 +139,7 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div id="mobile-menu" className="md:hidden bg-background border-b border-border">
+        <div ref={menuRef} id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu" className="md:hidden bg-background border-b border-border">
           <div className="px-4 py-4 space-y-3">
             {navLinks.map(({ text, href }) => (
               <Link

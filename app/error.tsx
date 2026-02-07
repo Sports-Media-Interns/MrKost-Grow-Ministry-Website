@@ -15,7 +15,7 @@ export default function Error({
   }, [error])
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 pt-16">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-16">
       <div className="text-center max-w-md">
         <p className="text-6xl font-bold text-accent font-[family-name:var(--font-playfair)]">
           Oops
@@ -42,6 +42,6 @@ export default function Error({
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

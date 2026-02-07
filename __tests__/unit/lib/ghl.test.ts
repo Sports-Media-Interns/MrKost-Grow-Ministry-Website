@@ -1,14 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+const { mockGetGhlApiToken, mockGetGhlLocationId } = vi.hoisted(() => ({
+  mockGetGhlApiToken: vi.fn(),
+  mockGetGhlLocationId: vi.fn(),
+}));
+
+vi.mock("@/lib/env", () => ({
+  getGhlApiToken: mockGetGhlApiToken,
+  getGhlLocationId: mockGetGhlLocationId,
+}));
+
+vi.mock("@sentry/nextjs", () => ({
+  captureException: vi.fn(),
+}));
+
 import { createGHLContact } from "@/lib/ghl";
 
 describe("createGHLContact", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    mockGetGhlApiToken.mockReturnValue("");
+    mockGetGhlLocationId.mockReturnValue("");
   });
 
   it("returns failure when API token is missing", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "");
-    vi.stubEnv("GHL_LOCATION_ID", "test-loc");
+    mockGetGhlApiToken.mockReturnValue("");
+    mockGetGhlLocationId.mockReturnValue("test-loc");
 
     const result = await createGHLContact({
       firstName: "John",
@@ -23,8 +40,8 @@ describe("createGHLContact", () => {
   });
 
   it("returns failure when Location ID is missing", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("");
 
     const result = await createGHLContact({
       firstName: "John",
@@ -39,8 +56,8 @@ describe("createGHLContact", () => {
   });
 
   it("sends correct request payload", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "test-location");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("test-location");
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -74,8 +91,8 @@ describe("createGHLContact", () => {
   });
 
   it("returns contactId on success", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "test-location");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("test-location");
 
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: true,
@@ -95,8 +112,8 @@ describe("createGHLContact", () => {
   });
 
   it("returns failure on non-ok response", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "test-location");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("test-location");
 
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: false,
@@ -117,8 +134,8 @@ describe("createGHLContact", () => {
   });
 
   it("handles network errors gracefully", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "test-location");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("test-location");
 
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network failed")));
 
@@ -135,8 +152,8 @@ describe("createGHLContact", () => {
   });
 
   it("splits full name into first and last", async () => {
-    vi.stubEnv("GHL_API_TOKEN", "pit-test-token");
-    vi.stubEnv("GHL_LOCATION_ID", "test-location");
+    mockGetGhlApiToken.mockReturnValue("pit-test-token");
+    mockGetGhlLocationId.mockReturnValue("test-location");
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,

@@ -16,9 +16,10 @@ describe("Loading", () => {
 
   it("is centered on the page", () => {
     const { container } = render(<Loading />)
-    const main = container.querySelector("main")
-    expect(main?.className).toContain("flex")
-    expect(main?.className).toContain("items-center")
-    expect(main?.className).toContain("justify-center")
+    // Uses <div> (not <main>) since layout.tsx already wraps in <main>
+    const wrapper = container.firstElementChild
+    expect(wrapper?.className).toContain("flex")
+    expect(wrapper?.className).toContain("items-center")
+    expect(wrapper?.className).toContain("justify-center")
   })
 })

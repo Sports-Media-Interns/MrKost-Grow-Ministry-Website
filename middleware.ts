@@ -20,6 +20,8 @@ export function middleware(request: NextRequest) {
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""} https://api.mapbox.com https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://widgets.leadconnectorhq.com https://stcdn.leadconnectorhq.com https://services.leadconnectorhq.com`,
+    // Note: 'unsafe-inline' for styles is required by Mapbox GL, Radix UI, Framer Motion,
+    // and GHL widget which all inject inline styles. Nonce-based styles would break these libraries.
     "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://stcdn.leadconnectorhq.com https://fonts.bunny.net",
     "img-src 'self' data: blob: https://*.mapbox.com https://www.googletagmanager.com https://images.leadconnectorhq.com https://stcdn.leadconnectorhq.com",
     "font-src 'self' data: https://stcdn.leadconnectorhq.com https://fonts.bunny.net",

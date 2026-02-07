@@ -1,15 +1,25 @@
-import { useEffect, useState } from "react"
+import { useSyncExternalStore } from "react"
+
+function subscribe(query: string, callback: () => void): () => void {
+  const media = window.matchMedia(query)
+  media.addEventListener("change", callback)
+  return () => media.removeEventListener("change", callback)
+}
+
+function getSnapshot(query: string): boolean {
+  return window.matchMedia(query).matches
+}
+
+function getServerSnapshot(): boolean {
+  return false
+}
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false)
-
-  useEffect(() => {
-    const media = window.matchMedia(query)
-    setMatches(media.matches)
-    const listener = (event: MediaQueryListEvent) => setMatches(event.matches)
-    media.addEventListener("change", listener)
-    return () => media.removeEventListener("change", listener)
-  }, [query])
-
-  return matches
+  // useSyncExternalStore avoids hydration mismatch by returning
+  // getServerSnapshot during SSR and first client render
+  return useSyncExternalStore(
+    (callback) => subscribe(query, callback),
+    () => getSnapshot(query),
+    getServerSnapshot
+  )
 }

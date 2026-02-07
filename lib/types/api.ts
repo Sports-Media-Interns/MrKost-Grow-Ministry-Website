@@ -21,6 +21,22 @@ export interface LeadPayload {
   phone?: string;
   source: string;
   recaptchaToken: string;
+  // Whitelisted extra fields (matching ALLOWED_EXTRA_FIELDS in lead/route.ts)
+  organization?: string;
+  service?: string;
+  serviceName?: string;
+  destinations?: string;
+  groupSize?: string | number;
+  travelDates?: string;
+  travelMonth?: string;
+  travelYear?: string;
+  duration?: string;
+  notes?: string;
+  specialNeeds?: string;
+  churchName?: string;
+  offer?: string;
+  tripType?: string;
+  region?: string;
   [key: string]: unknown;
 }
 

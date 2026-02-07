@@ -2,10 +2,18 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import {
+  getHealthCheckToken,
+  getUpstashRedisUrl,
+  getUpstashRedisToken,
+  getSupabaseUrl,
+  getSupabaseServiceRoleKey,
+  getGhlApiToken,
+} from "@/lib/env";
 
 export async function GET(request: NextRequest) {
   // Authenticate: require bearer token if HEALTH_CHECK_TOKEN is set
-  const token = process.env.HEALTH_CHECK_TOKEN;
+  const token = getHealthCheckToken();
   if (token) {
     const auth = request.headers.get("authorization") || "";
     const expected = `Bearer ${token}`;
@@ -27,12 +35,14 @@ export async function GET(request: NextRequest) {
   const checks: Record<string, "ok" | "unavailable"> = {};
 
   // Check Upstash Redis connectivity
-  if (process.env.UPSTASH_REDIS_REST_URL) {
+  const redisUrl = getUpstashRedisUrl();
+  const redisToken = getUpstashRedisToken();
+  if (redisUrl) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 3_000);
-      const res = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/ping`, {
-        headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` },
+      const res = await fetch(`${redisUrl}/ping`, {
+        headers: { Authorization: `Bearer ${redisToken}` },
         signal: controller.signal,
       });
       clearTimeout(timeout);
@@ -43,14 +53,16 @@ export async function GET(request: NextRequest) {
   }
 
   // Check Supabase connectivity
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  const supabaseUrl = getSupabaseUrl();
+  const supabaseKey = getSupabaseServiceRoleKey();
+  if (supabaseUrl && supabaseKey) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 3_000);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
+      const res = await fetch(`${supabaseUrl}/rest/v1/`, {
         headers: {
-          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
         },
         signal: controller.signal,
       });
@@ -62,14 +74,15 @@ export async function GET(request: NextRequest) {
   }
 
   // Check GHL API connectivity
-  if (process.env.GHL_API_TOKEN) {
+  const ghlToken = getGhlApiToken();
+  if (ghlToken) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 3_000);
       const res = await fetch("https://services.leadconnectorhq.com/locations/search", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${process.env.GHL_API_TOKEN}`,
+          Authorization: `Bearer ${ghlToken}`,
           Version: "2021-07-28",
         },
         signal: controller.signal,

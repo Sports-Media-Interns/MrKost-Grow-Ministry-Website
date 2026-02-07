@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Globe, BookOpen, Heart, Users, ChevronRight, ChevronLeft, Check, MapPin } from "lucide-react"
 import { GradientButton } from "@/components/ui/gradient-button"
+import { loadRecaptchaScript, getRecaptchaToken } from "@/lib/recaptcha-client"
 import type { TravelLocation } from "@/components/ui/travel-map"
 
 interface TripPlannerProps {
@@ -128,6 +129,9 @@ export function TripPlanner({ locations }: TripPlannerProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  // Load reCAPTCHA script on mount
+  useEffect(() => { loadRecaptchaScript() }, [])
   const [formData, setFormData] = useState<FormData>({
     tripType: null,
     region: null,
@@ -192,6 +196,7 @@ export function TripPlanner({ locations }: TripPlannerProps) {
     setSubmitting(true)
     setSubmitError(null)
     try {
+      const recaptchaToken = await getRecaptchaToken("lead_capture")
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -201,6 +206,7 @@ export function TripPlanner({ locations }: TripPlannerProps) {
           email: formData.contactEmail.trim(),
           phone: formData.contactPhone.trim(),
           source: "trip-planner",
+          recaptchaToken,
           tripType: formData.tripType,
           destinations: formData.destinations,
           region: formData.region,

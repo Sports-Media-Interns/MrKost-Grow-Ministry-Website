@@ -14,10 +14,23 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Prevent webpack from bundling mapbox-gl -- loaded from CDN instead
-      config.externals = [...(config.externals || []), { "mapbox-gl": "mapboxgl" }];
+  webpack: (config) => {
+    // Skip parsing mapbox-gl's pre-built bundle — it's loaded from CDN at
+    // runtime by travel-map.tsx, not imported as a module. Without noParse,
+    // Sentry's withSentryConfig wrapper tries to re-wrap the pre-built
+    // bundle, causing "Cannot read properties of undefined (reading 'call')".
+    config.module = config.module || {};
+    const existing = config.module.noParse;
+    if (Array.isArray(existing)) {
+      config.module.noParse = [...existing, /mapbox-gl/];
+    } else if (existing instanceof RegExp) {
+      config.module.noParse = [existing, /mapbox-gl/];
+    } else if (typeof existing === "function") {
+      const prev = existing;
+      config.module.noParse = (content: string) =>
+        prev(content) || /mapbox-gl/.test(content);
+    } else {
+      config.module.noParse = [/mapbox-gl/];
     }
     return config;
   },

@@ -33,6 +33,7 @@ const clientSchema = z.object({
   NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().default(""),
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: z.string().default(""),
   NEXT_PUBLIC_SENTRY_DSN: z.string().default(""),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().default(""),
 });
 
 /* ------------------------------------------------------------------ */
@@ -98,6 +99,41 @@ export function getGA4MeasurementId(): string {
 /** Server-only: Webhook signing secret for HMAC signatures */
 export function getWebhookSigningSecret(): string {
   return getServerEnv().WEBHOOK_SIGNING_SECRET;
+}
+
+/** Server-only: GHL API token for CRM integration */
+export function getGhlApiToken(): string {
+  return getServerEnv().GHL_API_TOKEN;
+}
+
+/** Server-only: GHL Location (sub-account) ID */
+export function getGhlLocationId(): string {
+  return getServerEnv().GHL_LOCATION_ID;
+}
+
+/** Server-only: Health check bearer token */
+export function getHealthCheckToken(): string {
+  return getServerEnv().HEALTH_CHECK_TOKEN;
+}
+
+/** Server-only: Upstash Redis REST URL */
+export function getUpstashRedisUrl(): string {
+  return getServerEnv().UPSTASH_REDIS_REST_URL;
+}
+
+/** Server-only: Upstash Redis REST token */
+export function getUpstashRedisToken(): string {
+  return getServerEnv().UPSTASH_REDIS_REST_TOKEN;
+}
+
+/** Server-only: Supabase URL */
+export function getSupabaseUrl(): string {
+  return getServerEnv().NEXT_PUBLIC_SUPABASE_URL;
+}
+
+/** Server-only: Supabase service role key */
+export function getSupabaseServiceRoleKey(): string {
+  return getServerEnv().SUPABASE_SERVICE_ROLE_KEY;
 }
 
 /* ------------------------------------------------------------------ */
