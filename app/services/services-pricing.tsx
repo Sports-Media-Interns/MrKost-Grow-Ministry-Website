@@ -50,7 +50,7 @@ const plans = [
     period: "per month",
     features: [
       "Everything in Growth",
-      "AI Telephone Agent - Inbound (24/7)",
+      "AI Telephone Agent - Inbound (24/7, 300 calls/mo)",
       "Custom website & SEO/AEO",
       "Managed social media service",
       "Branded merchandise store",
