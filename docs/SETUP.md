@@ -20,15 +20,15 @@ Complete guide to setting up the Grow Ministry website for local development.
 
 Before you begin, ensure you have the following installed:
 
-- [ ] **Node.js** 20 or later — [Download](https://nodejs.org/)
-- [ ] **pnpm** 9+ — Install via `corepack enable && corepack prepare pnpm@9 --activate`
-- [ ] **Git** — [Download](https://git-scm.com/)
+- [ ] **Node.js** 20 or later - [Download](https://nodejs.org/)
+- [ ] **pnpm** 9+ - Install via `corepack enable && corepack prepare pnpm@9 --activate`
+- [ ] **Git** - [Download](https://git-scm.com/)
 - [ ] A code editor ([VS Code](https://code.visualstudio.com/) recommended)
 
 ### Optional Accounts
 
-- [GoHighLevel](https://www.gohighlevel.com/) — for CRM webhook integration (lead capture forms)
-- [Mapbox](https://www.mapbox.com/) — for map access token (currently hardcoded)
+- [GoHighLevel](https://www.gohighlevel.com/) - for CRM webhook integration (lead capture forms)
+- [Mapbox](https://www.mapbox.com/) - for map access token (currently hardcoded)
 
 ---
 
@@ -87,8 +87,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### When to Use Each Dev Command
 
-- **`pnpm dev`** — Use after pulling new changes, switching branches, or when you encounter stale cache issues. It clears the `.next` directory before starting.
-- **`pnpm dev:fast`** — Use for regular development when you haven't changed configuration files. Skips cache clear for faster startup.
+- **`pnpm dev`** - Use after pulling new changes, switching branches, or when you encounter stale cache issues. It clears the `.next` directory before starting.
+- **`pnpm dev:fast`** - Use for regular development when you haven't changed configuration files. Skips cache clear for faster startup.
 
 ---
 
@@ -129,10 +129,10 @@ Uses `eslint-config-next` for Next.js-specific linting rules.
 
 Install these extensions for the best experience:
 
-1. **Tailwind CSS IntelliSense** — autocomplete for Tailwind classes
-2. **TypeScript Importer** — auto-import TypeScript modules
-3. **ESLint** — inline linting
-4. **Prettier** — code formatting (optional)
+1. **Tailwind CSS IntelliSense** - autocomplete for Tailwind classes
+2. **TypeScript Importer** - auto-import TypeScript modules
+3. **ESLint** - inline linting
+4. **Prettier** - code formatting (optional)
 
 ### Recommended VS Code Settings
 

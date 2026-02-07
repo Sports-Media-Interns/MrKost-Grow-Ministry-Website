@@ -123,11 +123,11 @@ jobs:
       - name: Rollback on smoke test failure
         if: steps.smoke.outcome == 'failure' && steps.pre_deploy.outputs.previous_url != ''
         run: |
-          echo "::warning::Smoke tests failed — rolling back to previous deployment"
+          echo "::warning::Smoke tests failed - rolling back to previous deployment"
           vercel promote ${{ steps.pre_deploy.outputs.previous_url }} --token=${{ secrets.VERCEL_TOKEN }} --yes || true
           echo "::error::Production deployment rolled back due to smoke test failure"
           exit 1
 
       - name: Deployment successful
         if: steps.smoke.outcome == 'success'
-        run: echo "Production deployment verified — all smoke tests passed"
+        run: echo "Production deployment verified - all smoke tests passed"

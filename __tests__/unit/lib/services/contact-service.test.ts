@@ -196,7 +196,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // GHL failure — graceful degradation
+  // GHL failure - graceful degradation
   // -----------------------------------------------------------------------
   it("logs warning when GHL creation fails but still returns result", async () => {
     setupGhlFailure("GHL API error: 500");
@@ -228,7 +228,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // Webhook not configured — skips gracefully
+  // Webhook not configured - skips gracefully
   // -----------------------------------------------------------------------
   it("skips webhook when URL is not configured", async () => {
     mockGetGhlWebhookUrl.mockReset();
@@ -244,7 +244,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // Webhook failure — non-critical, does not block
+  // Webhook failure - non-critical, does not block
   // -----------------------------------------------------------------------
   it("logs warning when webhook delivery fails but still succeeds", async () => {
     vi.stubGlobal(
@@ -261,7 +261,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // Supabase not configured — skips gracefully
+  // Supabase not configured - skips gracefully
   // -----------------------------------------------------------------------
   it("skips database save when Supabase is not configured", async () => {
     setupSupabase(false);
@@ -274,7 +274,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // Supabase insert error — non-critical, logged
+  // Supabase insert error - non-critical, logged
   // -----------------------------------------------------------------------
   it("logs error when Supabase insert returns an error", async () => {
     const mockInsert = vi.fn().mockResolvedValue({
@@ -293,7 +293,7 @@ describe("processContact", () => {
   });
 
   // -----------------------------------------------------------------------
-  // Supabase network error — non-critical, logged
+  // Supabase network error - non-critical, logged
   // -----------------------------------------------------------------------
   it("logs warning when Supabase throws a network error", async () => {
     const mockFrom = vi.fn().mockReturnValue({

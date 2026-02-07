@@ -95,7 +95,7 @@ function loadMapboxGL(): Promise<any> {
 }
 
 // ---- Inner map component (merged from travel-map.tsx to prevent Sentry
-//      webpack chunk corruption — a separate "use client" file gets its own
+//      webpack chunk corruption - a separate "use client" file gets its own
 //      chunk which Sentry's withSentryConfig wrapper corrupts) ----
 
 function TravelMap({ locations }: { locations: TravelLocation[] }) {
@@ -132,7 +132,7 @@ function TravelMap({ locations }: { locations: TravelLocation[] }) {
       const mapboxgl = await loadMapboxGL()
       const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
       if (!token) {
-        console.warn("[TravelMap] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is not set — map will not load")
+        console.warn("[TravelMap] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is not set - map will not load")
         return
       }
       mapboxgl.accessToken = token

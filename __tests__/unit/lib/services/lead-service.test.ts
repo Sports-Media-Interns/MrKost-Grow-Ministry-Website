@@ -126,7 +126,7 @@ describe("processLead", () => {
   });
 
   // =======================================================================
-  // Tag building — LEAD_TYPE_TAGS map
+  // Tag building - LEAD_TYPE_TAGS map
   // =======================================================================
   describe("tag building", () => {
     it("maps exit_intent_lead to exit-intent tag", async () => {
@@ -273,7 +273,7 @@ describe("processLead", () => {
   });
 
   // =======================================================================
-  // GHL failure — graceful degradation
+  // GHL failure - graceful degradation
   // =======================================================================
   it("logs warning when GHL creation fails but still returns result", async () => {
     setupGhlFailure("GHL API error: 422");

@@ -210,16 +210,16 @@ For detailed architecture documentation, see [`docs/ARCHITECTURE.md`](docs/ARCHI
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--primary` | `#161821` | Dark navy — headings, buttons, backgrounds |
+| `--primary` | `#161821` | Dark navy - headings, buttons, backgrounds |
 | `--primary-foreground` | `#f8f9f7` | Light text on primary backgrounds |
-| `--accent` | `#c1c5b3` | Sage green — highlights, icons, badges |
+| `--accent` | `#c1c5b3` | Sage green - highlights, icons, badges |
 | `--muted` | `#f0f1ec` | Light sections, alternate backgrounds |
 | `--muted-foreground` | `#5c5e64` | Body text, secondary content |
 | `--border` | `#e2e3de` | Card borders, dividers |
 
 **Fonts:**
 - **Inter** (`--font-inter`): Body text, UI elements
-- **Playfair Display** (`--font-playfair`): Headings, display text — applied via `font-[family-name:var(--font-playfair)]`
+- **Playfair Display** (`--font-playfair`): Headings, display text - applied via `font-[family-name:var(--font-playfair)]`
 
 ---
 
