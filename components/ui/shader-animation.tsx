@@ -72,7 +72,7 @@ export function ShaderAnimation() {
 
     let renderer: THREE.WebGLRenderer
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "low-power" })
     } catch {
       // WebGL not supported -- silently fail, container keeps its black background
       return

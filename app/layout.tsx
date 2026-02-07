@@ -96,12 +96,12 @@ export default function RootLayout({
         </a>
         {/* GA4 - only loads when user accepts analytics cookies */}
         <GoogleAnalytics />
-        {/* GHL Chat Widget */}
+        {/* GHL Chat Widget -- lazyOnload defers until browser idle */}
         <Script
           src="https://widgets.leadconnectorhq.com/loader.js"
           data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
           data-widget-id="67f69cbfa99c36de4915acce"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
         />
         <ErrorBoundary>

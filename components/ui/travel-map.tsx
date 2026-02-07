@@ -122,7 +122,12 @@ export function TravelMap({ locations }: TravelMapProps) {
 
     async function initMap() {
       const mapboxgl = await loadMapboxGL()
-      mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+      if (!token) {
+        console.warn("[TravelMap] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is not set — map will not load")
+        return
+      }
+      mapboxgl.accessToken = token
 
       if (cancelled || !mapContainer.current) return
 
