@@ -104,15 +104,15 @@ export default function RootLayout({
           strategy="lazyOnload"
           crossOrigin="anonymous"
         />
+        <Navbar />
         <ErrorBoundary>
-          <Navbar />
           <main id="main-content">
             {children}
           </main>
-          <Footer4Col />
-          <CookieConsent />
-          <ExitIntent />
         </ErrorBoundary>
+        <Footer4Col />
+        <CookieConsent />
+        <ExitIntent />
       </body>
     </html>
   );

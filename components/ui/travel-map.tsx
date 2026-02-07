@@ -293,7 +293,7 @@ export function TravelMap({ locations }: TravelMapProps) {
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div ref={mapContainer} className="h-[700px] w-full z-0" />
+      <div ref={mapContainer} className="h-[700px] w-full z-0" role="application" aria-label="Interactive map showing travel destinations" />
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur-sm rounded-lg border border-border p-3 z-10">
         <p className="text-xs font-semibold mb-2">Trip Types</p>

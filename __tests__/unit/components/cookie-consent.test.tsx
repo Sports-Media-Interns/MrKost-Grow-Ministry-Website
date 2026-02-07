@@ -77,10 +77,10 @@ describe("CookieConsent", () => {
     });
 
     // Banner should now be visible
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
       screen.getByText(/we use cookies to enhance your experience/i)
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("does not render banner if consent already given", async () => {
@@ -157,7 +157,7 @@ describe("CookieConsent", () => {
       vi.advanceTimersByTime(350);
     });
 
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     const acceptAllBtn = screen.getByRole("button", { name: /accept all/i });
 
@@ -183,13 +183,13 @@ describe("CookieConsent", () => {
     fireEvent.click(customizeBtn);
 
     // Panel should be visible with cookie categories
-    expect(screen.getByText("Essential")).toBeDefined();
-    expect(screen.getByText("Analytics")).toBeDefined();
-    expect(screen.getByText("Marketing")).toBeDefined();
-    expect(screen.getByText("Functional")).toBeDefined();
+    expect(screen.getByText("Essential")).toBeInTheDocument();
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
+    expect(screen.getByText("Marketing")).toBeInTheDocument();
+    expect(screen.getByText("Functional")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /save preferences/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
 
     // Click Customize again to close panel
     fireEvent.click(customizeBtn);
@@ -226,7 +226,7 @@ describe("CookieConsent", () => {
     });
 
     const policyLink = screen.getByRole("link", { name: /cookie policy/i });
-    expect(policyLink).toBeDefined();
+    expect(policyLink).toBeInTheDocument();
     expect(policyLink.getAttribute("href")).toBe("/cookie-policy");
   });
 

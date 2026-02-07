@@ -326,7 +326,7 @@ export function CookieConsent() {
                       </p>
                     </div>
                   </div>
-                  <Switch checked disabled className="opacity-60" />
+                  <Switch checked disabled className="opacity-60" aria-label="Essential cookies (always active)" />
                 </div>
 
                 {/* Analytics */}
@@ -340,6 +340,7 @@ export function CookieConsent() {
                   <Switch
                     checked={analytics}
                     onCheckedChange={setAnalytics}
+                    aria-label="Analytics cookies"
                   />
                 </div>
 
@@ -354,6 +355,7 @@ export function CookieConsent() {
                   <Switch
                     checked={marketing}
                     onCheckedChange={setMarketing}
+                    aria-label="Marketing cookies"
                   />
                 </div>
 
@@ -368,6 +370,7 @@ export function CookieConsent() {
                   <Switch
                     checked={functional}
                     onCheckedChange={setFunctional}
+                    aria-label="Functional cookies"
                   />
                 </div>
               </div>

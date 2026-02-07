@@ -9,7 +9,7 @@ describe("GradientButton", () => {
 
     expect(
       screen.getByRole("button", { name: /get started/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("renders as a button element by default", () => {
@@ -41,7 +41,7 @@ describe("GradientButton", () => {
     );
 
     const link = screen.getByRole("link", { name: /contact us/i });
-    expect(link).toBeDefined();
+    expect(link).toBeInTheDocument();
     expect(link.tagName).toBe("A");
     expect(link.getAttribute("href")).toBe("/contact");
     // The gradient-button class should be applied to the anchor
@@ -67,7 +67,7 @@ describe("GradientButton", () => {
     );
 
     const btn = screen.getByRole("button", { name: /submit form/i });
-    expect(btn).toBeDefined();
+    expect(btn).toBeInTheDocument();
     expect((btn as HTMLButtonElement).disabled).toBe(true);
     expect(btn.getAttribute("type")).toBe("submit");
   });

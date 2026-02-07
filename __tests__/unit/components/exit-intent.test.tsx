@@ -67,7 +67,7 @@ describe("ExitIntent", () => {
     });
 
     // Popup should now be visible
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   it("closes popup when X button is clicked", async () => {
@@ -81,7 +81,7 @@ describe("ExitIntent", () => {
       fireEvent.mouseLeave(document.documentElement, { clientY: -1 });
     });
 
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     // Click close button
     const closeButton = screen.getByLabelText(/close popup/i);
@@ -102,7 +102,7 @@ describe("ExitIntent", () => {
       fireEvent.mouseLeave(document.documentElement, { clientY: -1 });
     });
 
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     // Press Escape
     await act(async () => {
@@ -125,7 +125,7 @@ describe("ExitIntent", () => {
     });
 
     const dialog = screen.getByRole("dialog");
-    expect(dialog).toBeDefined();
+    expect(dialog).toBeInTheDocument();
 
     // Click the backdrop (the dialog element itself)
     fireEvent.click(dialog);
@@ -145,9 +145,9 @@ describe("ExitIntent", () => {
       fireEvent.mouseLeave(document.documentElement, { clientY: -1 });
     });
 
-    expect(screen.getByLabelText(/name/i)).toBeDefined();
-    expect(screen.getByLabelText(/email/i)).toBeDefined();
-    expect(screen.getByRole("button", { name: /get my free report/i })).toBeDefined();
+    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /get my free report/i })).toBeInTheDocument();
   });
 
   it("allows typing in form fields", async () => {
@@ -184,7 +184,7 @@ describe("ExitIntent", () => {
 
     // Submit button should be present
     const submitButton = screen.getByRole("button", { name: /get my free report/i });
-    expect(submitButton).toBeDefined();
+    expect(submitButton).toBeInTheDocument();
     expect(submitButton.getAttribute("type")).toBe("submit");
   });
 

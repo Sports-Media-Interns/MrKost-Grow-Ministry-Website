@@ -30,13 +30,13 @@ describe("ContactForm", () => {
   it("renders all form fields", () => {
     render(<ContactForm />);
 
-    expect(screen.getByLabelText(/full name/i)).toBeDefined();
-    expect(screen.getByLabelText(/email address/i)).toBeDefined();
-    expect(screen.getByLabelText(/phone number/i)).toBeDefined();
-    expect(screen.getByLabelText(/church \/ organization/i)).toBeDefined();
-    expect(screen.getByLabelText(/service of interest/i)).toBeDefined();
-    expect(screen.getByLabelText(/message/i)).toBeDefined();
-    expect(screen.getByRole("button", { name: /send message/i })).toBeDefined();
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/church \/ organization/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/service of interest/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/message/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /send message/i })).toBeInTheDocument();
   });
 
   it("allows typing in form fields", () => {
@@ -56,13 +56,13 @@ describe("ContactForm", () => {
     render(<ContactForm />);
 
     const select = screen.getByLabelText(/service of interest/i);
-    expect(select).toBeDefined();
+    expect(select).toBeInTheDocument();
 
     // Check that some service options exist
-    expect(screen.getByText("Digital Marketing")).toBeDefined();
-    expect(screen.getByText("Website Development & SEO")).toBeDefined();
-    expect(screen.getByText("CRM Solutions")).toBeDefined();
-    expect(screen.getByText("AI Telephone Agent")).toBeDefined();
+    expect(screen.getByText("Digital Marketing")).toBeInTheDocument();
+    expect(screen.getByText("Website Development & SEO")).toBeInTheDocument();
+    expect(screen.getByText("CRM Solutions")).toBeInTheDocument();
+    expect(screen.getByText("AI Telephone Agent")).toBeInTheDocument();
   });
 
   it("shows success message after successful submission", async () => {
@@ -85,7 +85,7 @@ describe("ContactForm", () => {
 
     // Wait for success message
     await waitFor(() => {
-      expect(screen.getByText(/message sent!/i)).toBeDefined();
+      expect(screen.getByText(/message sent!/i)).toBeInTheDocument();
     });
 
     // Verify API was called
@@ -114,7 +114,7 @@ describe("ContactForm", () => {
 
     // Wait for error message
     await waitFor(() => {
-      expect(screen.getByText("Test error message")).toBeDefined();
+      expect(screen.getByText("Test error message")).toBeInTheDocument();
     });
   });
 
@@ -136,12 +136,12 @@ describe("ContactForm", () => {
 
     // Wait for success and click "send another"
     await waitFor(() => {
-      expect(screen.getByText(/message sent!/i)).toBeDefined();
+      expect(screen.getByText(/message sent!/i)).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText(/send another message/i));
 
     // Form should be visible again
-    expect(screen.getByLabelText(/full name/i)).toBeDefined();
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
   });
 });

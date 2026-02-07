@@ -94,10 +94,10 @@ describe("Pricing", () => {
 
     expect(
       screen.getByText("Simple, Transparent Pricing")
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/choose the plan that works for your ministry/i)
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("renders custom title and description when provided", () => {
@@ -109,30 +109,30 @@ describe("Pricing", () => {
       />
     );
 
-    expect(screen.getByText("Our Plans")).toBeDefined();
-    expect(screen.getByText("Pick one.")).toBeDefined();
+    expect(screen.getByText("Our Plans")).toBeInTheDocument();
+    expect(screen.getByText("Pick one.")).toBeInTheDocument();
   });
 
   it("renders pricing card with plan names", () => {
     render(<Pricing plans={samplePlans} />);
 
-    expect(screen.getByText("Starter")).toBeDefined();
-    expect(screen.getByText("Growth")).toBeDefined();
-    expect(screen.getByText("Enterprise")).toBeDefined();
+    expect(screen.getByText("Starter")).toBeInTheDocument();
+    expect(screen.getByText("Growth")).toBeInTheDocument();
+    expect(screen.getByText("Enterprise")).toBeInTheDocument();
   });
 
   it("renders features list for each plan", () => {
     render(<Pricing plans={samplePlans} />);
 
-    expect(screen.getByText("Feature A")).toBeDefined();
-    expect(screen.getByText("Feature B")).toBeDefined();
-    expect(screen.getByText("Feature C")).toBeDefined();
-    expect(screen.getByText("Everything in Starter")).toBeDefined();
-    expect(screen.getByText("Feature D")).toBeDefined();
-    expect(screen.getByText("Feature E")).toBeDefined();
-    expect(screen.getByText("Everything in Growth")).toBeDefined();
-    expect(screen.getByText("Feature F")).toBeDefined();
-    expect(screen.getByText("Feature G")).toBeDefined();
+    expect(screen.getByText("Feature A")).toBeInTheDocument();
+    expect(screen.getByText("Feature B")).toBeInTheDocument();
+    expect(screen.getByText("Feature C")).toBeInTheDocument();
+    expect(screen.getByText("Everything in Starter")).toBeInTheDocument();
+    expect(screen.getByText("Feature D")).toBeInTheDocument();
+    expect(screen.getByText("Feature E")).toBeInTheDocument();
+    expect(screen.getByText("Everything in Growth")).toBeInTheDocument();
+    expect(screen.getByText("Feature F")).toBeInTheDocument();
+    expect(screen.getByText("Feature G")).toBeInTheDocument();
   });
 
   it("renders CTA buttons with correct text", () => {
@@ -140,13 +140,13 @@ describe("Pricing", () => {
 
     expect(
       screen.getByRole("link", { name: /get started/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /start growing/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /contact us/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("renders plan descriptions", () => {
@@ -154,37 +154,37 @@ describe("Pricing", () => {
 
     expect(
       screen.getByText("Perfect for small churches getting started.")
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByText("For growing ministries ready to scale.")
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "Full-service solution for large organizations."
       )
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("shows monthly prices by default", () => {
     render(<Pricing plans={samplePlans} />);
 
     // Monthly prices ($297, $597, $997)
-    expect(screen.getByText("$297")).toBeDefined();
-    expect(screen.getByText("$597")).toBeDefined();
-    expect(screen.getByText("$997")).toBeDefined();
+    expect(screen.getByText("$297")).toBeInTheDocument();
+    expect(screen.getByText("$597")).toBeInTheDocument();
+    expect(screen.getByText("$997")).toBeInTheDocument();
   });
 
   it("renders Popular badge on popular plan", () => {
     render(<Pricing plans={samplePlans} />);
 
-    expect(screen.getByText("Popular")).toBeDefined();
+    expect(screen.getByText("Popular")).toBeInTheDocument();
   });
 
   it("renders annual billing toggle", () => {
     render(<Pricing plans={samplePlans} />);
 
-    expect(screen.getByText(/annual billing/i)).toBeDefined();
-    expect(screen.getByText(/save 20%/i)).toBeDefined();
+    expect(screen.getByText(/annual billing/i)).toBeInTheDocument();
+    expect(screen.getByText(/save 20%/i)).toBeInTheDocument();
   });
 
   it("renders period text for plans", () => {

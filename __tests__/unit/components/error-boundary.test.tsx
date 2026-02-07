@@ -24,7 +24,7 @@ describe("ErrorBoundary", () => {
         <div>Test content</div>
       </ErrorBoundary>
     );
-    expect(screen.getByText("Test content")).toBeDefined();
+    expect(screen.getByText("Test content")).toBeInTheDocument();
   });
 
   it("renders fallback on error", () => {
@@ -33,7 +33,7 @@ describe("ErrorBoundary", () => {
         <ThrowingComponent shouldThrow={true} />
       </ErrorBoundary>
     );
-    expect(screen.getByText("Something went wrong")).toBeDefined();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
   it("renders custom fallback on error", () => {
@@ -42,7 +42,7 @@ describe("ErrorBoundary", () => {
         <ThrowingComponent shouldThrow={true} />
       </ErrorBoundary>
     );
-    expect(screen.getByText("Custom fallback")).toBeDefined();
+    expect(screen.getByText("Custom fallback")).toBeInTheDocument();
   });
 
   it("recovers when Try Again is clicked", () => {
@@ -52,7 +52,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText("Something went wrong")).toBeDefined();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText("Try Again"));
 
@@ -64,6 +64,6 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText("Something went wrong")).toBeDefined();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 });

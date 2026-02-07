@@ -4,10 +4,13 @@
  */
 import * as Sentry from "@sentry/nextjs";
 import { getGhlApiToken, getGhlLocationId } from "@/lib/env";
+import { createLogger } from "@/lib/logger";
 import type { CreateContactParams, GHLContactResponse } from "@/lib/types";
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 const GHL_API_VERSION = "2021-07-28";
+
+const log = createLogger("ghl");
 
 /**
  * Create (or upsert) a contact in GoHighLevel CRM.
@@ -20,7 +23,7 @@ export async function createGHLContact(
   const locationId = getGhlLocationId();
 
   if (!token || !locationId) {
-    console.error("[GHL] API token or Location ID not configured");
+    log.error("API token or Location ID not configured");
     return { success: false, error: "GHL not configured" };
   }
 
@@ -66,7 +69,7 @@ export async function createGHLContact(
 
     if (!response.ok) {
       const err = new Error(`GHL API error: ${response.status}`);
-      console.error("[GHL] Create contact failed:", response.status, data);
+      log.error("Create contact failed", { status: response.status });
       Sentry.captureException(err, {
         contexts: { ghl: { status: response.status, tags: params.tags, source: params.source } },
       });
@@ -76,9 +79,7 @@ export async function createGHLContact(
       };
     }
 
-    console.log(
-      `[GHL] Contact created: ${data.contact?.id} | tags: [${params.tags.join(", ")}]`
-    );
+    log.info("Contact created", { contactId: data.contact?.id, tags: params.tags });
 
     return {
       success: true,
@@ -86,11 +87,11 @@ export async function createGHLContact(
     };
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      console.error("[GHL] Request timed out");
+      log.error("Request timed out");
       Sentry.captureException(err, { tags: { integration: "ghl", reason: "timeout" } });
       return { success: false, error: "GHL request timed out" };
     }
-    console.error("[GHL] Error creating contact:", err);
+    log.error("Error creating contact", { error: String(err) });
     Sentry.captureException(err, { tags: { integration: "ghl" } });
     return { success: false, error: "GHL request failed" };
   } finally {

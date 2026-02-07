@@ -51,26 +51,26 @@ describe("ServiceModal", () => {
   it("renders modal when open", () => {
     render(<ServiceModal {...defaultProps} />);
 
-    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
       screen.getByText(/get the crm solutions white paper/i)
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         /enter your details below to receive instant access/i
       )
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("shows form fields with labels", () => {
     render(<ServiceModal {...defaultProps} />);
 
-    expect(screen.getByLabelText(/full name/i)).toBeDefined();
-    expect(screen.getByLabelText(/email address/i)).toBeDefined();
-    expect(screen.getByLabelText(/phone number/i)).toBeDefined();
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /get access/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("allows typing in form fields", () => {
@@ -140,15 +140,15 @@ describe("ServiceModal", () => {
 
     // Wait for thank you state
     await waitFor(() => {
-      expect(screen.getByText(/thank you, jane/i)).toBeDefined();
+      expect(screen.getByText(/thank you, jane/i)).toBeInTheDocument();
     });
 
     expect(
       screen.getByText(/your crm solutions white paper is ready/i)
-    ).toBeDefined();
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /download white paper/i })
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   it("download link has correct URL after submit", async () => {

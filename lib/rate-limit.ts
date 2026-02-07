@@ -14,21 +14,31 @@ const useUpstash = Boolean(UPSTASH_REST_URL && UPSTASH_REST_TOKEN);
 /*  Upstash Rate Limiter (Production)                                  */
 /* ------------------------------------------------------------------ */
 
-let upstashRatelimit: Ratelimit | null = null;
+let redis: Redis | null = null;
 
 if (useUpstash) {
-  const redis = new Redis({
+  redis = new Redis({
     url: UPSTASH_REST_URL!,
     token: UPSTASH_REST_TOKEN!,
   });
+}
 
-  // Using sliding window algorithm: 5 requests per 60 seconds
-  upstashRatelimit = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(5, "60 s"),
-    analytics: true,
-    prefix: "gm:ratelimit",
-  });
+const upstashInstances = new Map<string, Ratelimit>();
+
+function getUpstashLimiter(limit: number, windowMs: number): Ratelimit {
+  const key = `${limit}:${windowMs}`;
+  let instance = upstashInstances.get(key);
+  if (!instance && redis) {
+    const windowSec = Math.ceil(windowMs / 1000);
+    instance = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(limit, `${windowSec} s`),
+      analytics: true,
+      prefix: "gm:ratelimit",
+    });
+    upstashInstances.set(key, instance);
+  }
+  return instance!;
 }
 
 /* ------------------------------------------------------------------ */
@@ -98,9 +108,9 @@ function inMemoryRateLimit(
  * Rate limiter that uses Upstash Redis in production (when configured)
  * and falls back to in-memory for local development.
  *
- * Note: When Upstash is active, the `limit` and `windowMs` params are
- * ignored -- Upstash uses a fixed sliding window (5 req / 60s) configured
- * at module init. The params only apply to the in-memory fallback.
+ * The `limit` and `windowMs` params are respected in both Upstash and
+ * in-memory modes. Upstash instances are lazily created and cached per
+ * unique limit/window combination.
  *
  * Environment variables required for production:
  * - UPSTASH_REDIS_REST_URL
@@ -110,22 +120,19 @@ export async function rateLimit(
   key: string,
   { limit = 5, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
 ): Promise<{ allowed: boolean; remaining: number }> {
-  // Use Upstash in production if configured
-  // Note: Upstash uses a fixed 5/60s sliding window; per-call params are ignored
-  if (useUpstash && upstashRatelimit) {
+  if (useUpstash && redis) {
     try {
-      const result = await upstashRatelimit.limit(key);
+      const limiter = getUpstashLimiter(limit, windowMs);
+      const result = await limiter.limit(key);
       return {
         allowed: result.success,
         remaining: result.remaining,
       };
     } catch (error) {
       console.warn("[RateLimit] Upstash error, falling back to in-memory:", error);
-      // Fall through to in-memory on error
     }
   }
 
-  // In-memory fallback for development or if Upstash fails
   return inMemoryRateLimit(key, limit, windowMs);
 }
 

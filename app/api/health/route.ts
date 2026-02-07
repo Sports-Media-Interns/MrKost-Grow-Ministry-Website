@@ -12,7 +12,7 @@ import {
 } from "@/lib/env";
 
 export async function GET(request: NextRequest) {
-  // Authenticate: require bearer token if HEALTH_CHECK_TOKEN is set
+  // Authenticate: require bearer token in production, optional in dev
   const token = getHealthCheckToken();
   if (token) {
     const auth = request.headers.get("authorization") || "";
@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
     if (!isValid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+  } else if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Health check token not configured" }, { status: 500 });
   }
 
   // Rate limit health checks (10 per minute)

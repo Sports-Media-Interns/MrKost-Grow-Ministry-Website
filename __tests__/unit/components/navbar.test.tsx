@@ -22,17 +22,17 @@ describe("Navbar", () => {
   it("renders logo and brand name", () => {
     render(<Navbar />);
 
-    expect(screen.getByAltText("Grow Ministry")).toBeDefined();
-    expect(screen.getByText("Grow Ministry")).toBeDefined();
+    expect(screen.getByAltText("Grow Ministry")).toBeInTheDocument();
+    expect(screen.getByText("Grow Ministry")).toBeInTheDocument();
   });
 
   it("renders all navigation links", () => {
     render(<Navbar />);
 
-    expect(screen.getByRole("link", { name: /home/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /services/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /travel/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /about/i })).toBeDefined();
+    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /services/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /travel/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /contact/i }).length).toBeGreaterThan(0);
   });
 
@@ -63,7 +63,7 @@ describe("Navbar", () => {
     render(<Navbar />);
 
     const menuButton = screen.getByLabelText(/toggle menu/i);
-    expect(menuButton).toBeDefined();
+    expect(menuButton).toBeInTheDocument();
   });
 
   it("toggles mobile menu on button click", () => {
@@ -78,7 +78,7 @@ describe("Navbar", () => {
     fireEvent.click(menuButton);
 
     // Mobile menu should now be visible
-    expect(screen.getByRole("navigation")).toBeDefined();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
 
     // Click to close mobile menu
     fireEvent.click(menuButton);

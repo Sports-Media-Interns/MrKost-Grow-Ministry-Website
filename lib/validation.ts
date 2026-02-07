@@ -20,10 +20,10 @@ export function validateName(value: unknown): string {
   return name;
 }
 
-/** Validate and sanitize an email address. */
+/** Validate and sanitize an email address (RFC 5321: max 254 chars). */
 export function validateEmail(value: unknown): string {
   const email = typeof value === "string" ? sanitizeString(value).trim() : "";
-  if (!email || !EMAIL_REGEX.test(email)) {
+  if (!email || email.length > 254 || !EMAIL_REGEX.test(email)) {
     throw new ValidationError("Valid email address is required");
   }
   return email;
