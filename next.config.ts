@@ -15,22 +15,23 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   webpack: (config) => {
-    // Skip parsing mapbox-gl's pre-built bundle — it's loaded from CDN at
-    // runtime by travel-map.tsx, not imported as a module. Without noParse,
-    // Sentry's withSentryConfig wrapper tries to re-wrap the pre-built
-    // bundle, causing "Cannot read properties of undefined (reading 'call')".
+    // Skip parsing mapbox-gl (loaded via CDN, not webpack). Without noParse,
+    // Sentry's withSentryConfig wrapper corrupts webpack chunk module
+    // resolution for mapbox-gl. Three.js must NOT be in noParse since
+    // shader-animation.tsx uses dynamic import("three") which webpack must transform.
     config.module = config.module || {};
     const existing = config.module.noParse;
+    const noParsePatterns = [/mapbox-gl/];
     if (Array.isArray(existing)) {
-      config.module.noParse = [...existing, /mapbox-gl/];
+      config.module.noParse = [...existing, ...noParsePatterns];
     } else if (existing instanceof RegExp) {
-      config.module.noParse = [existing, /mapbox-gl/];
+      config.module.noParse = [existing, ...noParsePatterns];
     } else if (typeof existing === "function") {
       const prev = existing;
       config.module.noParse = (content: string) =>
-        prev(content) || /mapbox-gl/.test(content);
+        prev(content) || noParsePatterns.some((p) => p.test(content));
     } else {
-      config.module.noParse = [/mapbox-gl/];
+      config.module.noParse = noParsePatterns;
     }
     return config;
   },
@@ -119,4 +120,15 @@ export default withSentryConfig(analyzeBundles(nextConfig), {
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
   },
+
+  // Prevent Sentry from wrapping App Router files with instrumentation modules.
+  // This avoids "sentry-wrapper-module" virtual modules corrupting webpack
+  // chunk resolution for heavy libraries (Three.js, Mapbox GL).
+  webpack: {
+    autoInstrumentAppDirectory: false,
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+  widenClientFileUpload: false,
 });

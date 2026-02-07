@@ -20,16 +20,11 @@ Sentry.init({
   // Performance monitoring sample rate (10% of transactions)
   tracesSampleRate: 0.1,
 
-  // Session replay for debugging (1% of sessions, 100% on error)
-  replaysSessionSampleRate: 0.01,
-  replaysOnErrorSampleRate: 1.0,
+  // Replay removed: saves ~50-70KB gzipped from every page load.
+  // The Replay SDK downloads for 100% of users even at 0.01 sample rate.
+  // Re-enable with Sentry.lazyLoadIntegration('replayIntegration') if needed.
 
   integrations: [
-    Sentry.replayIntegration({
-      // PII redaction: mask all text and block all media in replay
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
     Sentry.browserTracingIntegration(),
     Sentry.breadcrumbsIntegration({
       console: true,

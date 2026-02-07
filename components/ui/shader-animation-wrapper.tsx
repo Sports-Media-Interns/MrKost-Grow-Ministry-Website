@@ -1,19 +1,20 @@
 "use client"
 
-import dynamic from "next/dynamic"
+import { useState, useEffect } from "react"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
-
-const ShaderAnimation = dynamic(
-  () => import("@/components/ui/shader-animation").then((mod) => mod.ShaderAnimation),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 w-full h-full bg-black" />
-    ),
-  }
-)
+import { ShaderAnimation } from "@/components/ui/shader-animation"
 
 export function ShaderAnimationWrapper() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="absolute inset-0 w-full h-full bg-black" />
+  }
+
   return (
     <ErrorBoundary
       fallback={<div className="absolute inset-0 w-full h-full bg-black" />}

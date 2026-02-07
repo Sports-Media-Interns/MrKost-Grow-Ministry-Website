@@ -97,6 +97,9 @@ export function TravelMap({ locations }: TravelMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const map = useRef<any>(null)
+  // Track click popup to remove before creating a new one (prevents leak)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clickPopup = useRef<any>(null)
 
   // Listen for region change events from DestinationTabs
   useEffect(() => {
@@ -257,7 +260,10 @@ export function TravelMap({ locations }: TravelMapProps) {
 
           m.flyTo({ center: coords, zoom: 5, duration: 1200 })
 
-          new mapboxgl.Popup({
+          // Remove previous click popup to prevent leaked instances
+          clickPopup.current?.remove()
+
+          clickPopup.current = new mapboxgl.Popup({
             offset: 25,
             closeButton: true,
             closeOnClick: true,
