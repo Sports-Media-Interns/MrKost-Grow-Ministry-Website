@@ -1,4 +1,4 @@
-# CLAUDE.md — Grow Ministry Website
+# CLAUDE.md - Grow Ministry Website
 
 ## Project Overview
 
@@ -57,7 +57,7 @@ hooks/                  → Custom hooks
 middleware.ts             → Nonce-based CSP generation per request
 
 lib/                    → Utilities
-  utils.ts              → cn() — Tailwind class merge helper
+  utils.ts              → cn() - Tailwind class merge helper
   rate-limit.ts         → Upstash Redis rate limiter with in-memory fallback
   sanitize.ts           → sanitize-html based XSS prevention for payloads
   env.ts                → Zod-based environment variable validation and accessors
@@ -89,7 +89,7 @@ __tests__/              → Test files (Vitest)
 
 | File | Purpose |
 |------|---------|
-| `app/layout.tsx` | Root layout — global metadata, GA4 (env var), skip-to-content, nav, footer |
+| `app/layout.tsx` | Root layout - global metadata, GA4 (env var), skip-to-content, nav, footer |
 | `app/globals.css` | Design tokens (CSS vars), Tailwind theme mapping, gradient animations |
 | `components.json` | shadcn/ui config (New York style, Lucide icons) |
 | `.env.local` | Environment variables (git-ignored) |
@@ -189,6 +189,6 @@ All secrets and API keys are stored in `.env.local` (never committed). See `.env
 
 - Framework: Vitest + React Testing Library + jsdom
 - Test location: `__tests__/` directory
-- Coverage: `lib/`, `components/ui/`, `app/api/`, `hooks/` — 70% CI threshold
+- Coverage: `lib/`, `components/ui/`, `app/api/`, `hooks/` - 70% CI threshold
 - Run: `pnpm test` (CI) or `pnpm test:watch` (watch)
-- E2E: Playwright — `pnpm test:e2e`
+- E2E: Playwright - `pnpm test:e2e`

@@ -23,7 +23,7 @@ export function ShaderAnimation() {
     let onResize: (() => void) | null = null
 
     async function init() {
-      // Dynamic import with destructuring — only loads client-side (useEffect never
+      // Dynamic import with destructuring - only loads client-side (useEffect never
       // runs on server). Destructured imports enable webpack tree-shaking, reducing
       // the Three.js chunk from ~600KB to ~50-80KB.
       const { OrthographicCamera, Scene, PlaneGeometry, ShaderMaterial, Mesh, WebGLRenderer, Vector2 } = await import("three")

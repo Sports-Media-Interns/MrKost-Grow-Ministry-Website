@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     // 2) externals tells webpack to resolve any import("mapbox-gl") to window.mapboxgl
     // Both are needed to fully exclude mapbox-gl from the webpack bundle and
     // prevent Sentry's withSentryConfig wrapper from corrupting chunks.
-    // Three.js must NOT be in noParse — shader-animation.tsx uses dynamic
+    // Three.js must NOT be in noParse - shader-animation.tsx uses dynamic
     // import("three") which webpack must transform for tree-shaking.
     config.module = config.module || {};
     const existing = config.module.noParse;

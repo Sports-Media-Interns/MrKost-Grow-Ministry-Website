@@ -67,13 +67,13 @@ The site uses Next.js 15 App Router with a hybrid rendering approach:
 
 ```
 RootLayout (server)
-├── <Script> — Google Analytics 4
-├── Navbar (client) — Navigation with mobile toggle
-├── {children} — Page content (server)
+├── <Script> - Google Analytics 4
+├── Navbar (client) - Navigation with mobile toggle
+├── {children} - Page content (server)
 │   └── [Page-specific client components]
-├── CookieConsent (client) — Cookie banner with GHL webhook
-├── ExitIntent (client) — Exit popup with GHL webhook
-└── Chatbot (client) — Chat interface
+├── CookieConsent (client) - Cookie banner with GHL webhook
+├── ExitIntent (client) - Exit popup with GHL webhook
+└── Chatbot (client) - Chat interface
 ```
 
 ### Page Structure Pattern
@@ -248,13 +248,13 @@ Pre-defined conversation tree:
 ### Color Palette
 
 ```
-Primary:     #161821  (dark navy)     — headings, backgrounds, CTAs
-Foreground:  #f8f9f7  (off-white)     — text on primary
-Accent:      #c1c5b3  (sage green)    — highlights, icons, badges
-Muted:       #f0f1ec  (light gray)    — alternate section backgrounds
-Muted FG:    #5c5e64  (medium gray)   — body text, descriptions
-Border:      #e2e3de  (light border)  — card borders, dividers
-Destructive: #dc2626  (red)           — error states
+Primary:     #161821  (dark navy)     - headings, backgrounds, CTAs
+Foreground:  #f8f9f7  (off-white)     - text on primary
+Accent:      #c1c5b3  (sage green)    - highlights, icons, badges
+Muted:       #f0f1ec  (light gray)    - alternate section backgrounds
+Muted FG:    #5c5e64  (medium gray)   - body text, descriptions
+Border:      #e2e3de  (light border)  - card borders, dividers
+Destructive: #dc2626  (red)           - error states
 ```
 
 ### Typography

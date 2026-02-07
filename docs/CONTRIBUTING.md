@@ -90,7 +90,7 @@ Before/after screenshots for visual changes.
 
 ### TypeScript
 
-- **Strict mode** is enabled — all code must pass strict type checking
+- **Strict mode** is enabled - all code must pass strict type checking
 - Use explicit types for function parameters and return values
 - Prefer `interface` over `type` for object shapes
 - Use `import type` for type-only imports
